@@ -14,6 +14,3 @@ test_benzene_08 = fread("/Users/sumitmishra/Downloads/2. Emissions/Mobile/Road T
 
 test_benzene_10 = fread("/Users/sumitmishra/Downloads/2. Emissions/Mobile/Road Transport/Excel/MajorRoads/Benzene_2010.csv")
 
-
-plot(st_geometry(test_benzene_08$X_COORD), pch=16, col="navy")
-
