@@ -45,3 +45,6 @@ library("SnowballC")
 
 if (!requireNamespace("glmnet")) install.packages("glmnet")
 library("glmnet")
+
+if (!requireNamespace("readxl")) install.packages("readxl")
+library("readxl")
