@@ -1,11 +1,5 @@
-if (!requireNamespace("caTools")) install.packages("caTools")
-library("caTools")
-
 if (!requireNamespace("gpkg")) install.packages("gpkg")
 library("gpkg")
-
-if (!requireNamespace("terra")) install.packages("terra")
-library("terra")
 
 if (!requireNamespace("data.table")) install.packages("data.table")
 library("data.table")
@@ -18,15 +12,6 @@ library("ggplot2")
 
 if (!requireNamespace("dplyr")) install.packages("dplyr")
 library("dplyr")
-
-if (!requireNamespace("gapminder")) install.packages("gapminder")
-library("gapminder")
-
-if (!requireNamespace("WDI")) install.packages("WDI")
-library("WDI")
-
-if (!requireNamespace("cowplot")) install.packages("cowplot")
-library("cowplot")
 
 if (!requireNamespace("jsonlite")) install.packages("jsonlite")
 library("jsonlite")
@@ -48,3 +33,15 @@ library("glmnet")
 
 if (!requireNamespace("readxl")) install.packages("readxl")
 library("readxl")
+
+if (!requireNamespace("RMySQL")) install.packages("RMySQL")
+library("RMySQL")
+
+if (!requireNamespace("DBI")) install.packages("DBI")
+library("DBI")
+
+if (!requireNamespace("odbc")) install.packages("odbc")
+library("odbc")
+
+if (!requireNamespace("readr")) install.packages("readr")
+library("readr")
