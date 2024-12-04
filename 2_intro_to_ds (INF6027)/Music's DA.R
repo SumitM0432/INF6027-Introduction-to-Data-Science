@@ -10,34 +10,50 @@ if (interactive()) {
 source("../0_config/0_libraries.R", local = TRUE)
 source("../0_config/0_functions.R", local = TRUE)
 
-# test code
-# con = dbConnect(SQLite(), '../1_datasets/MusicOSet/musicoset.db')
+# Loading the Data
+source("music_data_loading.R", local = TRUE)
 
-# Read and execute the SQL script
-# sql_script <- readLines("../1_datasets/MusicOSet/musicoset.sql")
-# dbExecute(con, paste(sql_script, collapse = "\n"))
+# Loading the RData
+load("RData/Loaded_MusicData.RData")
 
-con = dbConnect(RMySQL::MySQL(),
-                host='localhost',
-                port=3306,
-                user='root',
-                password='qwe123@A@A')
+# 20406 -> 20405 # No NULLS in df_chart_songs and df_pop_songs
+df_meta_songs = df_meta_songs %>%
+  # Dropping the null values
+  drop_na()
 
-dbSendQuery(con, "SET GLOBAL local_infile = true;")
-dbSendQuery(con, "CREATE DATABASE IF NOT EXISTS musicoset;")
+# No NULLS in df_pop_artists, df_chart_artists and df_meta_artists
+# No NULLS in df_acoustic_features
+# 744 NULLS in lyrics
 
-result = dbSendQuery(con, "SELECT * FROM musicoset.acoustic_features")
-df_acoustic_features = data.table(fetch(result, n = -1)) #n = -1 for all the rows
+# Getting the Artists IDs
+df_meta_songs = df_meta_songs %>%
+  mutate(
+    artist_id_vectors := mapply(extract_artist, artists)
+  )
 
-result = dbSendQuery(con, "SELECT * FROM musicoset.song_chart")
-df_song_chart = data.table(fetch(result, n = -1)) #n = -1 for all the rows
+check_coverage = function(df1, df2, on_col) {
+  
+  # Selecting the only the ids for data frame 1 (on which we are gonna do the check)
+  df1 = df1 %>%
+    select(all_of(on_col)) %>%
+    distinct()
+  
+  # Temp flag for the data frame 2 with whom we are gonna check
+  df2 = df2 %>%
+    mutate(temp_flag = 1) %>%
+    select(all_of(c(on_col, 'temp_flag')))
+  
+  # ids not present count
+  not_present = left_join(df1, df2, by = c(on_col)) %>%
+    filter(is.na(temp_flag)) %>%
+    select(all_of(on_col))
+  
+  print (paste0("ids not present in the second tables :: count :: ", nrow(not_present)))
+  return (not_present)
+  
+}
 
 
-list.files(path = "../1_datasets/MusicOSet/musicoset_metadata/", pattern = "*.csv")
 
-df <- 
-  list.files(path = "../1_datasets/MusicOSet/musicoset_metadata/",
-             pattern = "*.csv",
-             full.names = TRUE) %>% 
-  map_df(~fread(.))
-df
+
+
