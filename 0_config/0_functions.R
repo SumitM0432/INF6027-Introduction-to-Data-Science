@@ -7,3 +7,38 @@ print_description = function(df) {
   
   return (ls)
 }
+
+extract_artist = function(val) {
+  # Matches a literal expression saying extract anything between ' - ': where .* means match any sequence and ? means make it non greedy
+  id <- str_extract_all(val, "'(.*?)':")[[1]]
+  # Replace ' and :
+  id <- str_replace_all(id, "[':]", "")
+  # Replace anything that is there before ,
+  id = str_replace_all(id, "(.*?), ", "")
+  # Making a vector
+  id_vector = as.vector(id)
+  
+  return (id_vector)
+}
+
+check_coverage = function(df1, df2, on_col) {
+  
+  # Selecting the only the ids for data frame 1 (on which we are gonna do the check)
+  df1 = df1 %>%
+    select(all_of(on_col)) %>%
+    distinct()
+  
+  # Temp flag for the data frame 2 with whom we are gonna check
+  df2 = df2 %>%
+    mutate(temp_flag = 1) %>%
+    select(all_of(c(on_col, 'temp_flag')))
+  
+  # ids not present count
+  not_present = left_join(df1, df2, by = c(on_col)) %>%
+    filter(is.na(temp_flag)) %>%
+    select(all_of(on_col))
+  
+  print (paste0("ids not present in the second tables :: count :: ", nrow(not_present)))
+  return (not_present)
+  
+}
