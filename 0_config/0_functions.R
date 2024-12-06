@@ -42,3 +42,26 @@ check_coverage = function(df1, df2, on_col) {
   return (not_present)
   
 }
+
+get_artist_info = function (artist_ids_list, df_meta_artists = df_meta_artists) {
+  
+  # Getting the artist ids as a list
+  artist_ids_list = unlist(artist_ids_list)
+  
+  artist_info = df_meta_artists %>%
+    # Filtering for the artist ids in the questions
+    filter(artist_id %in% as.list(artist_ids_list)) %>%
+    # Changing the data type for the followers for the aggregation
+    mutate(followers = as.numeric(followers)) %>%
+    # interpolation NA's with 0 since artist has no followers
+    mutate(ifelse(is.na(followers), 0, followers)) %>%
+    # Summarizing
+    summarise(
+      total_followers = sum(followers, na.rm = TRUE),
+      avg_popularity = mean(popularity, na.rm = TRUE),
+      unique_m_genre = n_distinct(main_genre, na.rm = TRUE)
+    )
+  
+  # return (artist_info$total_followers, artist_info$avg_popularity, artist_info$unique_m_genre)
+  return (as.list(artist_info))
+}
