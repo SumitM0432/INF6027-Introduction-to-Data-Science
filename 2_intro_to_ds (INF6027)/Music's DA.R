@@ -25,29 +25,40 @@ df_meta_songs = df_meta_songs %>%
   # Dropping the null values
   drop_na()
 
+# Converting artist string to a list and counting the number of unique artists there are
 df_meta_songs = df_meta_songs %>%
   # Getting the Artists IDs
   mutate(artist_id_vectors := mapply(extract_artist, artists)) %>%
   # Counting the number of artist that has worked on that song
   mutate(num_artist = str_count(artist_id_vectors, ",") + 1)
 
-temp = df_meta_songs %>%
-  mutate(temp_ids = artist_id_vectors) %>%
-  separate_rows(artist_id_vectors, sep = ",")
+# Making new features like the total followers of the artists involved, their average popularity and there top unique music genres
+df_meta_songs = df_meta_songs %>%
+  rowwise() %>%
+  # Getting the total followers, unique genres for them and average popularity
+  mutate(artist_info = list(get_artist_info(artist_id_vectors, df_meta_artists))) %>%
+  mutate(total_followers = artist_info$total_follower,
+         avg_popularity = artist_info$avg_popularity,
+         unique_m_genre = artist_info$unique_m_genre) %>%
+  # Removing redundant column
+  select(-c(artist_info)) %>%
+  # Ungrouping
+  ungroup()
 
-get_artist_info = function (artist_ids_list, df_meta_artists = df_meta_artists) {
-  artist_ids_list = artist_ids_list[[1]]
-  
-  artist_info = df_meta_artists %>%
-    filter(artist_id %in% artist_ids_list) %>%
-    mutate(followers = as.numeric(followers)) %>%
-    group_by() %>%
-    summarise(
-      total_followers = sum(followers),
-      avg_popularity = mean(popularity)
-    )
-  
-}
+# Getting the maximum year for the every song by grouping and summarizing
+df_songs_my = df_pop_songs %>%
+  group_by(song_id) %>%
+  summarise(
+    max_year = max(year)
+  )
 
+# Joining the maximum year and filtering on it to get the latest score year_end_score
+df_pop_songs = df_pop_songs %>%
+  left_join(df_songs_my, by = c('song_id')) %>%
+  filter(year == max_year) %>%
+  select(-c(max_year)) %>%
+  distinct()
 
-
+# Joining with the df_meta_song to get the overall dataset with latest year_end_score and the year
+df_meta_songs = df_meta_songs %>%
+  left_join(df_pop_songs, by = c('song_id'))
