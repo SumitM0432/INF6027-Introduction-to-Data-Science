@@ -24,3 +24,12 @@ library("DBI")
 
 if (!requireNamespace("odbc")) install.packages("odbc")
 library("odbc")
+
+if (!requireNamespace("CatEncoders")) install.packages("CatEncoders")
+library("CatEncoders")
+
+if (!requireNamespace("fastDummies")) install.packages("fastDummies")
+library("fastDummies")
+
+if (!requireNamespace("tidymodels")) install.packages("tidymodels")
+library("tidymodels")
