@@ -65,3 +65,18 @@ get_artist_info = function (artist_ids_list, df_meta_artists = df_meta_artists) 
   # return (artist_info$total_followers, artist_info$avg_popularity, artist_info$unique_m_genre)
   return (as.list(artist_info))
 }
+
+evaluation_metrics = function(results_data) {
+  
+  # Root Mean Squared Error (RMSE)
+  rmse_val = rmse(results_data, truth = target_values,estimate = predicted_values)
+  # Mean Absolute Error (MAE)
+  mae_val = mae(results_data, truth = target_values, estimate = predicted_values)
+  # R-squared
+  rsq_val = rsq(results_data, truth = target_values, estimate = predicted_values)
+  
+  print (paste0("Root Mean Squared Error :: ", round(rmse_val$.estimate, 3)))
+  print (paste0("Mean Absolute Error :: ", round(mae_val$.estimate, 3)))
+  print (paste0("R Squared Error :: ", round(rsq_val$.estimate, 3)))
+  
+}
