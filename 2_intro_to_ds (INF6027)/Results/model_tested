@@ -1,0 +1,23 @@
+Linear Regression :: 
+
+[1] "Root Mean Squared Error :: 14.135"
+[1] "Mean Absolute Error :: 11.394"
+[1] "R Squared Error :: 0.588"
+
+Ridge Regression :: 
+
+[1] "Root Mean Squared Error :: 14.129"
+[1] "Mean Absolute Error :: 11.396"
+[1] "R Squared Error :: 0.589"
+
+Lasso Regression ::
+
+[1] "Root Mean Squared Error :: 14.139"
+[1] "Mean Absolute Error :: 11.401"
+[1] "R Squared Error :: 0.588"
+
+Random Forest :: 
+
+[1] "Root Mean Squared Error :: 12.882"
+[1] "Mean Absolute Error :: 10.271"
+[1] "R Squared Error :: 0.661"

@@ -27,3 +27,6 @@ library("tidymodels")
 
 if (!requireNamespace("glmnet")) install.packages("glmnet")
 library("glmnet")
+
+if (!requireNamespace("randomForest")) install.packages("randomForest")
+library("randomForest")

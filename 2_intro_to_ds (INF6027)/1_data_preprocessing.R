@@ -1,7 +1,4 @@
-# 20406 -> 20405 # No NULLS in df_chart_songs and df_pop_songs
-# No NULLS in df_pop_artists, df_chart_artists and df_meta_artists
-# No NULLS in df_acoustic_features
-# 744 NULLS in lyrics
+# DATA PREPROCESSING ------------------------------------------------------
 
 df_meta_songs = df_meta_songs %>%
   # Dropping the null values
