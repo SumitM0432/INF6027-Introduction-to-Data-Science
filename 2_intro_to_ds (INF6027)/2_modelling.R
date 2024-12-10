@@ -122,10 +122,6 @@ saveRDS(lasso_model, "Results/lasso_model_est.rds")
 # Saving the Random Forest Model
 saveRDS(rf_model, "Results/rf_model_est.rds")
 
-
-
-
-
 actual = data.table(df_test$popularity)
 predicted = data.table(linear_predictions)
 res = tibble(actual = df_test$popularity, predicted = data.table(linear_predictions))
