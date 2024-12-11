@@ -30,3 +30,10 @@ library("glmnet")
 
 if (!requireNamespace("randomForest")) install.packages("randomForest")
 library("randomForest")
+
+if (!requireNamespace("xgboost")) install.packages("xgboost")
+library("xgboost")
+
+if (!requireNamespace("caret")) install.packages("caret")
+library("caret")
+

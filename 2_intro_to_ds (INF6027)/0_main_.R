@@ -22,6 +22,10 @@ print(paste(Sys.time(), ' :: DATA PREPROCESSING'))
 # Running the Preprocessing and Features Engineering Script
 source("1_data_preprocessing.R")
 
+print(paste(Sys.time(), ' :: MODEL DEFINITIONS'))
+# Defining the models
+source("2_model_definition.R")
+
 print(paste(Sys.time(), ' :: MODEL TRAINING AND EVALUATION'))
 # Training the machine learning model 
-source("2_modelling.R")
+source("3_training_evaluation.R")

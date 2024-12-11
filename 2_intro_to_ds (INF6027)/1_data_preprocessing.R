@@ -60,14 +60,29 @@ df_meta_songs_encoded <- dummy_cols(df_meta_songs,
 # omitting the NA's
 df_meta_songs_encoded = na.omit(df_meta_songs_encoded)
 
+print(paste(Sys.time(), ' STEP :: SEGEMENTING TRAIN AND TEST DATA'))
+
 # Splitting the data into train and test
 train_index <- sample(seq_len(nrow(df_meta_songs_encoded)), size = 0.7 * nrow(df_meta_songs_encoded))
 df_train <- df_meta_songs_encoded[train_index, ]
 df_test <- df_meta_songs_encoded[-train_index, ]
 
 print (paste0("Training Data Shape :: ", nrow(df_train), ", ", length(df_train)))
-print (paste0("Training Data Shape :: ", nrow(df_test), ", ", length(df_test)))
+print (paste0("Testing Data Shape :: ", nrow(df_test), ", ", length(df_test)))
+
+# FOR LINEAR REGRESSION
+# Preparing the formula specific for the linear regression model
+linear_regression_train_cols = popularity ~ .
+
+# FOR RIDGE, LASSO AND RANDOM FOREST REGRESSION
+# Training and Testing Data for the models
+X_train = df_train %>% select(-c(popularity))
+X_test = df_test %>% select(-c(popularity))
+
+# Training and Testing Target Variable for the models
+y_train = df_train$popularity
+y_test = df_test$popularity
 
 # Saving RData for decrease the data loading time
-tables_to_save <- c('df_meta_songs_encoded', 'df_train', 'df_test')
+tables_to_save <- c('df_meta_songs_encoded', 'X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test', 'linear_regression_train_cols')
 save(list = tables_to_save, file = paste0('RData/Processed_Data.RData'))
