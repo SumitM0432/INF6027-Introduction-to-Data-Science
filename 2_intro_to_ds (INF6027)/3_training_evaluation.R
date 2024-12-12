@@ -1,13 +1,17 @@
 print(paste('--------------------------------', Sys.time(), 'LINEAR REGRESSION', '----------'))
 
+# Formula specific for the linear regression model
+linear_regression_train_cols = popularity_scaled ~ .
+
 # Training the linear regression model
 linear_model = linear_reg(formula = linear_regression_train_cols, data = df_train)
 
 # Model Definition Summary
 print(linear_model)
 
-# Predicting using the trained model (Linear Regression)
-linear_predictions = predict(linear_model, newdata = df_test)
+# Predicting using the trained model (Linear Regression) and also descaling it than constraining the predictions for interpretability
+linear_predictions_scaled = predict(linear_model, newdata = df_test)
+linear_predictions = pmax(pmin(linear_predictions_scaled * 100, 100), 0)
 
 # Making a tibble for evaluation and passing through the custom evaluation function
 results_data = tibble(target_values = df_test$popularity,
@@ -19,20 +23,22 @@ evaluation_metrics(results_data)
 print(paste('--------------------------------', Sys.time(), 'RIDGE REGRESSION', '-----------'))
 
 # Training the ridge regression model
-ridge_model = regularization_reg(X_train = X_train, y_train = y_train, alpha = 0)
+ridge_model = regularization_reg(X_train = X_train, y_train = y_train_scaled, alpha = 0)
 
 # Model Definition Summary
 print (ridge_model)
 
-# Prediction using the trained model (Ridge Regression)
-ridge_predictions <- predict(ridge_model,
-                             s = ridge_model$lambda.min, # Getting the minimum lambda (best lambda for the model)
-                             newx = as.matrix(X_test))
+# Prediction using the trained model (Ridge Regression) and also descaling it than constraining the predictions for interpretability
+ridge_predictions_scaled = predict(ridge_model,
+                                    s = ridge_model$lambda.min, # Getting the minimum lambda (best lambda for the model)
+                                    newx = as.matrix(X_test))
+ridge_predictions = pmax(pmin(ridge_predictions_scaled * 100, 100), 0)
 
 # Making a tibble for evaluation and passing through the custom evaluation function
 results_data = tibble(target_values = y_test,
                       predicted_values = data.table(ridge_predictions)$s1) %>%
-  mutate(predicted_values = as.numeric(predicted_values))
+              # Converting the predicted values to numeric
+              mutate(predicted_values = as.numeric(predicted_values))
 
 # Evaluation of the trained model
 evaluation_metrics(results_data)
@@ -40,20 +46,22 @@ evaluation_metrics(results_data)
 print(paste('--------------------------------', Sys.time(), 'LASSO REGRESSION', '-----------'))
 
 # Training the lasso regression model
-lasso_model = regularization_reg(X_train = X_train, y_train = y_train, alpha = 1)
+lasso_model = regularization_reg(X_train = X_train, y_train = y_train_scaled, alpha = 1)
 
 # Model Definition Summary
 print (lasso_model)
 
-# Prediction using the trained model (Lasso Regression)
-lasso_predictions <- predict(lasso_model,
+# Prediction using the trained model (Lasso Regression) and also descaling it than constraining the predictions for interpretability
+lasso_predictions_scaled <- predict(lasso_model,
                              s = lasso_model$lambda.min, # Getting the minimum lambda (best lambda for the model)
                              newx = as.matrix(X_test))
+lasso_predictions = pmax(pmin(lasso_predictions_scaled * 100, 100), 0)
 
 # Making a tibble for evaluation and passing through the custom evaluation function
 results_data = tibble(target_values = y_test,
                       predicted_values = data.table(lasso_predictions)$s1) %>%
-  mutate(predicted_values = as.numeric(predicted_values))
+              # Converting the predicted values to numeric
+              mutate(predicted_values = as.numeric(predicted_values))
 
 # Evaluation of the trained model
 evaluation_metrics(results_data)
@@ -61,18 +69,19 @@ evaluation_metrics(results_data)
 print(paste('--------------------------------', Sys.time(), 'RANDOM FOREST REGRESSION', '---'))
 
 # Training the random forest regression model
-rf_model = random_forest_reg(X_train = X_train, y_train = y_train, n_tree = 1000)
+rf_model = random_forest_reg(X_train = X_train, y_train = y_train_scaled, n_tree = 1500)
 
 # Model Definition Summary
 print(rf_model)
 
-# Prediction using the trained model (Random Forest Regression)
-rf_predictions = predict(rf_model, newdata = X_test)
+# Prediction using the trained model (Random Forest Regression) and also descaling it than constraining the predictions for interpretability
+rf_predictions_scaled = predict(rf_model, newdata = X_test)
+rf_predictions_scaled = data.table(rf_predictions_scaled)$rf_predictions_scaled
+rf_predictions = pmax(pmin(rf_predictions_scaled * 100, 100), 0)
 
 # Making a tibble for evaluation and passing through the custom evaluation function
 results_data = tibble(target_values = y_test,
-                      predicted_values = data.table(rf_predictions)$rf_predictions) %>%
-  mutate(predicted_values = as.numeric(predicted_values))
+                      predicted_values = rf_predictions)
 
 # Evaluation of the trained model
 evaluation_metrics(results_data)
@@ -89,10 +98,11 @@ params <- list(
 )
 
 # Training the XGB regression model
-xgb_model = xgb_reg(params = params, X_train = X_train, y_train = y_train, nrounds = 150)
+xgb_model = xgb_reg(params = params, X_train = X_train, y_train = y_train_scaled, nrounds = 200)
 
-# Prediction using the trained model (XGB Regression)
-xgb_predictions <- predict(xgb_model, newdata = as.matrix(X_test))
+# Prediction using the trained model (XGB Regression) and also descaling it than constraining the predictions for interpretability
+xgb_predictions_scaled = predict(xgb_model, newdata = as.matrix(X_test))
+xgb_predictions = pmax(pmin(xgb_predictions_scaled * 100, 100), 0)
 
 # Making a tibble for evaluation and passing through the custom evaluation function
 results_data = tibble(target_values = y_test,

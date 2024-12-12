@@ -110,10 +110,6 @@ df_test <- df_meta_songs_encoded[-train_index, ]
 print (paste0("Training Data Shape :: ", nrow(df_train), ", ", length(df_train)))
 print (paste0("Testing Data Shape :: ", nrow(df_test), ", ", length(df_test)))
 
-# FOR LINEAR REGRESSION
-# Formula specific for the linear regression model
-linear_regression_train_cols = popularity ~ .
-
 # FOR RIDGE, LASSO, RANDOM FOREST AND XGB REGRESSION
 # Training and Testing Data for the models
 X_train = df_train %>% select(-c(popularity))
@@ -121,8 +117,14 @@ X_test = df_test %>% select(-c(popularity))
 
 # Training and Testing Target Variable for the models
 y_train = df_train$popularity
+y_train_scaled = df_train$popularity / 100 # Scaled Values for regression models
 y_test = df_test$popularity
 
+# For LINEAR REGRESSION we need an extra column for scaled value in df_train
+df_train = df_train %>%
+  mutate(popularity_scaled = popularity / 100) %>%
+  select(-c(popularity))
+
 # Saving RData for decrease the data loading time
-tables_to_save <- c('df_meta_songs_encoded', 'X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test', 'linear_regression_train_cols')
+tables_to_save <- c('df_meta_songs_encoded', 'X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test')
 save(list = tables_to_save, file = paste0('RData/Processed_Music_Data.RData'))

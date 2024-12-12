@@ -1,29 +1,29 @@
 Linear Regression :: 
 
-[1] "Root Mean Squared Error :: 14.135"
-[1] "Mean Absolute Error :: 11.394"
-[1] "R Squared Error :: 0.588"
+[1] "Root Mean Squared Error :: 13.794"
+[1] "Mean Absolute Error :: 11.033"
+[1] "R Squared Error :: 0.608"
 
 Ridge Regression :: 
 
-[1] "Root Mean Squared Error :: 14.129"
-[1] "Mean Absolute Error :: 11.396"
-[1] "R Squared Error :: 0.589"
+[1] "Root Mean Squared Error :: 13.85"
+[1] "Mean Absolute Error :: 11.106"
+[1] "R Squared Error :: 0.607"
 
 Lasso Regression ::
 
-[1] "Root Mean Squared Error :: 14.139"
-[1] "Mean Absolute Error :: 11.401"
-[1] "R Squared Error :: 0.588"
+[1] "Root Mean Squared Error :: 13.801"
+[1] "Mean Absolute Error :: 11.043"
+[1] "R Squared Error :: 0.608"
 
 Random Forest :: 
 
-[1] "Root Mean Squared Error :: 12.882"
-[1] "Mean Absolute Error :: 10.271"
-[1] "R Squared Error :: 0.661"
+[1] "Root Mean Squared Error :: 12.574"
+[1] "Mean Absolute Error :: 10.024"
+[1] "R Squared Error :: 0.679"
 
 XGBoost ::
 
-[1] "Root Mean Squared Error :: 12.844"
-[1] "Mean Absolute Error :: 10.085"
-[1] "R Squared Error :: 0.66"
+[1] "Root Mean Squared Error :: 12.486"
+[1] "Mean Absolute Error :: 9.782"
+[1] "R Squared Error :: 0.679"
