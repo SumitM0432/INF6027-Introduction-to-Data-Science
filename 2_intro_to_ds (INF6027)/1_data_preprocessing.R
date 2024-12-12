@@ -1,28 +1,9 @@
 # DATA PREPROCESSING ------------------------------------------------------
 
+print(paste('--------------------------------', Sys.time(), 'ADDING SONGS FEATURES', '---'))
+# Dropping the null values
 df_meta_songs = df_meta_songs %>%
-  # Dropping the null values
   drop_na()
-
-# Converting artist string to a list and counting the number of unique artists there are
-df_meta_songs = df_meta_songs %>%
-  # Getting the Artists IDs
-  mutate(artist_id_vectors := mapply(extract_artist, artists)) %>%
-  # Counting the number of artist that has worked on that song
-  mutate(num_artist = str_count(artist_id_vectors, ",") + 1)
-
-# Making new features like the total followers of the artists involved, their average popularity and there top unique music genres
-df_meta_songs = df_meta_songs %>%
-  rowwise() %>%
-  # Getting the total followers, unique genres for them and average popularity
-  mutate(artist_info = list(get_artist_info(artist_id_vectors, df_meta_artists))) %>%
-  mutate(total_followers = artist_info$total_follower,
-         avg_popularity = artist_info$avg_popularity,
-         unique_m_genre = artist_info$unique_m_genre) %>%
-  # Removing redundant column
-  select(-c(artist_info)) %>%
-  # Ungrouping
-  ungroup()
 
 # Getting the maximum year for the every song by grouping and summarizing
 df_songs_max_year = df_pop_songs %>%
@@ -46,8 +27,67 @@ df_meta_songs = df_meta_songs %>%
 df_meta_songs = df_meta_songs %>%
   left_join(df_acoustic_features %>% distinct(), by = c('song_id'))
 
+print(paste('--------------------------------', Sys.time(), 'ADDING ARTISTS FEATURES', '-'))
+# Converting artist string to a list and counting the number of unique artists there are
 df_meta_songs = df_meta_songs %>%
-  # Removing the columns that won't be used for the training and testing
+  # Getting the Artists IDs
+  mutate(artist_id_vectors := mapply(extract_artist, artists)) %>%
+  # Counting the number of artist that has worked on that song
+  mutate(num_artist = str_count(as.character(artist_id_vectors), ",") + 1)
+
+# Making new features like the total followers of the artists involved, their average popularity and there top unique music genres
+df_meta_songs = df_meta_songs %>%
+  rowwise() %>%
+  # Getting the total followers, unique genres for them and average popularity
+  mutate(artist_info = list(get_artist_features(artist_id_vectors, df_meta_artists))) %>%
+  mutate(total_artist_followers = artist_info$total_follower,
+         avg_artist_popularity = artist_info$avg_popularity,
+         unique_artist_m_genre = artist_info$unique_m_genre) %>%
+  # Removing redundant column
+  select(-c(artist_info)) %>%
+  # Ungrouping
+  ungroup()
+
+# Getting the maximum year for the every artist by grouping and summarizing
+df_pop_artist_max_year = df_pop_artists %>%
+  group_by(artist_id) %>%
+  summarise(
+    max_year = max(year)
+  )
+
+# Joining the maximum year and filtering on it to get the latest score year_end_score
+df_pop_artists = df_pop_artists %>%
+  left_join(df_pop_artist_max_year, by = c('artist_id')) %>%
+  filter(year == max_year) %>%
+  select(-c(max_year)) %>%
+  distinct()
+
+df_meta_songs = df_meta_songs %>%
+  rowwise() %>%
+  # Getting the average year end score
+  mutate(avg_artist_year_end_score = list(get_artist_year_end_score(artist_id_vectors, df_pop_artists))) %>%
+  # Ungrouping
+  ungroup()
+
+print(paste('--------------------------------', Sys.time(), 'ADDING ALBUM FEATURES', '---'))
+
+
+
+
+
+
+
+print(paste('--------------------------------', Sys.time(), 'ADDING LYRICAL FEATURES', '-'))
+
+
+
+
+
+
+
+
+# Removing the columns that won't be used for the training and testing
+df_meta_songs = df_meta_songs %>%
   select(-c(song_id, song_name, billboard, artists, artist_id_vectors))
 
 # One-Hot Encoding the categorical Variables
