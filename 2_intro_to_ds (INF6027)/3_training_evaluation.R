@@ -122,21 +122,30 @@ saveRDS(lasso_model, "Results/lasso_model_est_lyrics.rds")
 saveRDS(rf_model, "Results/rf_model_est_lyrics.rds")
 saveRDS(rf_model, "Results/xgb_model_est_lyrics.rds")
 
+print(paste('--------------------------------', Sys.time(), 'PLOTTING', '-------------------'))
 
+# Predicted vs Actual Plot
+ggplot(results_data, aes(x = target_values, y = predicted_values)) +
+  geom_point(alpha = 0.6, color = "steelblue") +  # Points
+  geom_abline(slope = 1, intercept = 0, color = "darkred", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Predicted vs Actual Values",
+    x = "Actual Values",
+    y = "Predicted Values"
+  ) +
+  theme_minimal()
 
+# Calculating Residuals
+results_data = results_data %>%
+  mutate(residuals = target_values - predicted_values)
 
-
-
-# actual = data.table(df_test$popularity)
-# predicted = data.table(linear_predictions)
-# res = tibble(actual = df_test$popularity, predicted = data.table(linear_predictions))
-# 
-# ggplot(res) +
-#   geom_point(aes(x = actual, y = linear_predictions, color = )) +
-#   scale_colour_identity()
-# 
-# ggplot(x = df_test$popularity, y = predicted$linear_predictions, main = "Actual vs. Predicted", xlab = "Actual Values", ylab = "Predicted Values")
-# abline(a = 0, b = 1, col = "red")
-# 
-# plot(x = predicted, y = residuals, main = "Residual Plot", xlab = "Predicted Values", ylab = "Residuals")
-# abline(h = 0, col = "red")
+# Residuals Density/Histogram Plot
+ggplot(results_data, aes(x = residuals)) +
+  geom_histogram(fill = "lightsteelblue4", alpha = 0.5, bins = 50) +
+  geom_vline(xintercept = 0, color = "darkred", linetype = "dashed", linewidth = 1.2) +
+  labs(
+    title = "Residuals Density Plot",
+    x = "Residuals",
+    y = "Density"
+  ) +
+  theme_minimal()
