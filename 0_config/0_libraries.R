@@ -37,3 +37,14 @@ library("xgboost")
 if (!requireNamespace("caret")) install.packages("caret")
 library("caret")
 
+if (!requireNamespace("stopwords")) install.packages("stopwords")
+library("stopwords")
+
+if (!requireNamespace("syuzhet")) install.packages("syuzhet")
+library("syuzhet")
+
+if (!requireNamespace("tidytext")) install.packages("tidytext")
+library("tidytext")
+
+
+
