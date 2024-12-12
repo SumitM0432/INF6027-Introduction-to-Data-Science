@@ -100,6 +100,9 @@ params <- list(
 # Training the XGB regression model
 xgb_model = xgb_reg(params = params, X_train = X_train, y_train = y_train_scaled, nrounds = 200)
 
+# Model Definition Summary
+print(xgb_model)
+
 # Prediction using the trained model (XGB Regression) and also descaling it than constraining the predictions for interpretability
 xgb_predictions_scaled = predict(xgb_model, newdata = as.matrix(X_test))
 xgb_predictions = pmax(pmin(xgb_predictions_scaled * 100, 100), 0)
@@ -113,11 +116,11 @@ evaluation_metrics(results_data)
 
 print(paste('--------------------------------', Sys.time(), 'SAVING MODELS', '--------------'))
 
-saveRDS(linear_model, "Results/lm_model_est.rds")
-saveRDS(ridge_model, "Results/ridge_model_est.rds")
-saveRDS(lasso_model, "Results/lasso_model_est.rds")
-saveRDS(rf_model, "Results/rf_model_est.rds")
-saveRDS(rf_model, "Results/xgb_model_est.rds")
+saveRDS(linear_model, "Results/lm_model_est_lyrics.rds")
+saveRDS(ridge_model, "Results/ridge_model_est_lyrics.rds")
+saveRDS(lasso_model, "Results/lasso_model_est_lyrics.rds")
+saveRDS(rf_model, "Results/rf_model_est_lyrics.rds")
+saveRDS(rf_model, "Results/xgb_model_est_lyrics.rds")
 
 
 
