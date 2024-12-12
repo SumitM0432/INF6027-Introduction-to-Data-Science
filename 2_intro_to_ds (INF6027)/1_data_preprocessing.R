@@ -159,6 +159,27 @@ df_meta_songs_encoded <- dummy_cols(df_meta_songs,
 df_meta_songs_encoded = na.omit(df_meta_songs_encoded)
 print (paste0("Final Dataset Size :: ", nrow(df_meta_songs_encoded)))
 
+correlation_matrix = round(cor(df_meta_songs_encoded), 2)
+melted_correlation_matrix = melt(correlation_matrix) # Long Format
+
+ggplot(data = melted_correlation_matrix, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = sprintf("%.2f", value)), color = "gray0", size = 2) +
+  scale_fill_gradient2(
+    low = "steelblue", high = "darkred", mid = "white", midpoint = 0,
+    limit = c(-1, 1), space = "Lab", name = "Correlation"
+  ) +
+  labs(
+    title = "Correlation Matrix Heatmap",
+    x = "Features",
+    y = "Features"
+  ) +
+  theme_minimal() +  # Minimal theme for a clean look
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+    axis.text.y = element_text(size = 10)
+  )
+
 print(paste('--------------------------------', Sys.time(), 'SPLITTING DATA INTO TRAIN AND TEST DATA', '-'))
 
 # Splitting the data into train and test
