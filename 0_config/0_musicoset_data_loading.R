@@ -68,4 +68,4 @@ df_lyrics = data.table(fetch(lyrics_results, n = -1))
 
 # Saving RData for decrease the data loading time
 tables_to_save <- grep("df", ls(), value = TRUE)
-save(list = tables_to_save, file = paste0('RData/Loaded_MusicData.RData'))
+save(list = tables_to_save, file = paste0('RData/Loaded_Music_Data.RData'))

@@ -1,10 +1,10 @@
 print(paste('--------------------------------', Sys.time(), 'LINEAR REGRESSION', '----------'))
 
 # Training the linear regression model
-linear_model = linear_reg(linear_regression_train_cols, df_train)
+linear_model = linear_reg(formula = linear_regression_train_cols, data = df_train)
 
 # Model Definition Summary
-summary(linear_model)
+print(linear_model)
 
 # Predicting using the trained model (Linear Regression)
 linear_predictions = predict(linear_model, newdata = df_test)
@@ -19,7 +19,7 @@ evaluation_metrics(results_data)
 print(paste('--------------------------------', Sys.time(), 'RIDGE REGRESSION', '-----------'))
 
 # Training the ridge regression model
-ridge_model = regularization_reg(X_train = as.matrix(X_train), y_train = y_train, alpha = 0)
+ridge_model = regularization_reg(X_train = X_train, y_train = y_train, alpha = 0)
 
 # Model Definition Summary
 print (ridge_model)
@@ -40,7 +40,7 @@ evaluation_metrics(results_data)
 print(paste('--------------------------------', Sys.time(), 'LASSO REGRESSION', '-----------'))
 
 # Training the lasso regression model
-lasso_model = regularization_reg(X_train = as.matrix(X_train), y_train = y_train, alpha = 1)
+lasso_model = regularization_reg(X_train = X_train, y_train = y_train, alpha = 1)
 
 # Model Definition Summary
 print (lasso_model)
@@ -48,7 +48,7 @@ print (lasso_model)
 # Prediction using the trained model (Lasso Regression)
 lasso_predictions <- predict(lasso_model,
                              s = lasso_model$lambda.min, # Getting the minimum lambda (best lambda for the model)
-                             newx = X_test)
+                             newx = as.matrix(X_test))
 
 # Making a tibble for evaluation and passing through the custom evaluation function
 results_data = tibble(target_values = y_test,
@@ -61,7 +61,7 @@ evaluation_metrics(results_data)
 print(paste('--------------------------------', Sys.time(), 'RANDOM FOREST REGRESSION', '---'))
 
 # Training the random forest regression model
-rf_model = random_forest_reg(X_train, y_train, n_tree = 1000)
+rf_model = random_forest_reg(X_train = X_train, y_train = y_train, n_tree = 1000)
 
 # Model Definition Summary
 print(rf_model)
@@ -89,7 +89,7 @@ params <- list(
 )
 
 # Training the XGB regression model
-xgb_model = xgb_reg(params, X_train, y_train, nbounds = 150)
+xgb_model = xgb_reg(params = params, X_train = X_train, y_train = y_train, nrounds = 150)
 
 # Prediction using the trained model (XGB Regression)
 xgb_predictions <- predict(xgb_model, newdata = as.matrix(X_test))
@@ -114,16 +114,16 @@ saveRDS(rf_model, "Results/xgb_model_est.rds")
 
 
 
-actual = data.table(df_test$popularity)
-predicted = data.table(linear_predictions)
-res = tibble(actual = df_test$popularity, predicted = data.table(linear_predictions))
-
-ggplot(res) +
-  geom_point(aes(x = actual, y = linear_predictions, color = )) +
-  scale_colour_identity()
-
-ggplot(x = df_test$popularity, y = predicted$linear_predictions, main = "Actual vs. Predicted", xlab = "Actual Values", ylab = "Predicted Values")
-abline(a = 0, b = 1, col = "red")
-
-plot(x = predicted, y = residuals, main = "Residual Plot", xlab = "Predicted Values", ylab = "Residuals")
-abline(h = 0, col = "red")
+# actual = data.table(df_test$popularity)
+# predicted = data.table(linear_predictions)
+# res = tibble(actual = df_test$popularity, predicted = data.table(linear_predictions))
+# 
+# ggplot(res) +
+#   geom_point(aes(x = actual, y = linear_predictions, color = )) +
+#   scale_colour_identity()
+# 
+# ggplot(x = df_test$popularity, y = predicted$linear_predictions, main = "Actual vs. Predicted", xlab = "Actual Values", ylab = "Predicted Values")
+# abline(a = 0, b = 1, col = "red")
+# 
+# plot(x = predicted, y = residuals, main = "Residual Plot", xlab = "Predicted Values", ylab = "Residuals")
+# abline(h = 0, col = "red")

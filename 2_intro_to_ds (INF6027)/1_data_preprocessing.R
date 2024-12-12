@@ -70,12 +70,13 @@ df_meta_songs = df_meta_songs %>%
   ungroup()
 
 print(paste('--------------------------------', Sys.time(), 'ADDING ALBUM FEATURES', '---'))
+# Joining with track records to get the album ids
+df_meta_songs = df_meta_songs %>%
+  left_join(df_meta_tracks %>% select(song_id, album_id, track_number), by = c('song_id'))
 
-
-
-
-
-
+# 9105/20405 -> 44.6%
+# temp = df_meta_songs %>%
+#   left_join(df_meta_albums %>% select(album_id, total_tracks, album_type), by = c('album_id'))
 
 print(paste('--------------------------------', Sys.time(), 'ADDING LYRICAL FEATURES', '-'))
 
@@ -83,12 +84,10 @@ print(paste('--------------------------------', Sys.time(), 'ADDING LYRICAL FEAT
 
 
 
-
-
-
+print(paste('--------------------------------', Sys.time(), 'FURTHER PROCESSING', '------'))
 # Removing the columns that won't be used for the training and testing
 df_meta_songs = df_meta_songs %>%
-  select(-c(song_id, song_name, billboard, artists, artist_id_vectors))
+  select(-c(song_id, song_name, billboard, artists, artist_id_vectors, album_id))
 
 # One-Hot Encoding the categorical Variables
 df_meta_songs_encoded <- dummy_cols(df_meta_songs,
@@ -97,10 +96,11 @@ df_meta_songs_encoded <- dummy_cols(df_meta_songs,
   select(-c(explicit, song_type)) %>%
   mutate(across(everything(), as.numeric))
          
-# omitting the NA's
+# omitting the NA's (8 Data Points)
 df_meta_songs_encoded = na.omit(df_meta_songs_encoded)
+print (paste0("Final Dataset Size :: ", nrow(df_meta_songs_encoded)))
 
-print(paste(Sys.time(), ' STEP :: SEGEMENTING TRAIN AND TEST DATA'))
+print(paste('--------------------------------', Sys.time(), 'SPLITTING DATA INTO TRAIN AND TEST DATA', '-'))
 
 # Splitting the data into train and test
 train_index <- sample(seq_len(nrow(df_meta_songs_encoded)), size = 0.7 * nrow(df_meta_songs_encoded))
@@ -111,10 +111,10 @@ print (paste0("Training Data Shape :: ", nrow(df_train), ", ", length(df_train))
 print (paste0("Testing Data Shape :: ", nrow(df_test), ", ", length(df_test)))
 
 # FOR LINEAR REGRESSION
-# Preparing the formula specific for the linear regression model
+# Formula specific for the linear regression model
 linear_regression_train_cols = popularity ~ .
 
-# FOR RIDGE, LASSO AND RANDOM FOREST REGRESSION
+# FOR RIDGE, LASSO, RANDOM FOREST AND XGB REGRESSION
 # Training and Testing Data for the models
 X_train = df_train %>% select(-c(popularity))
 X_test = df_test %>% select(-c(popularity))
@@ -125,4 +125,4 @@ y_test = df_test$popularity
 
 # Saving RData for decrease the data loading time
 tables_to_save <- c('df_meta_songs_encoded', 'X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test', 'linear_regression_train_cols')
-save(list = tables_to_save, file = paste0('RData/Processed_Data.RData'))
+save(list = tables_to_save, file = paste0('RData/Processed_Music_Data.RData'))
