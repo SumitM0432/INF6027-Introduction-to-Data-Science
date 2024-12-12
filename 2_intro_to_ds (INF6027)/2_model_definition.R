@@ -10,7 +10,7 @@ linear_reg = function (formula, data) {
 
 # Ridge/Lasso Regression Model Definition
 regularization_reg = function(X_train, y_train, alpha) {
-  regularized_model = cv.glmnet(X_train,
+  regularized_model = cv.glmnet(as.matrix(X_train),
                                 y_train,
                                 alpha = alpha) # 0 - Ridge and 1 - Lasso
   return (regularized_model)

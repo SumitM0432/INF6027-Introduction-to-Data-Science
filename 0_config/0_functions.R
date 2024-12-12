@@ -10,9 +10,9 @@ print_description = function(df) {
 
 extract_artist = function(val) {
   # Matches a literal expression saying extract anything between ' - ': where .* means match any sequence and ? means make it non greedy
-  id <- str_extract_all(val, "'(.*?)':")[[1]]
+  id = str_extract_all(val, "'(.*?)':")[[1]]
   # Replace ' and :
-  id <- str_replace_all(id, "[':]", "")
+  id = str_replace_all(id, "[':]", "")
   # Replace anything that is there before ,
   id = str_replace_all(id, "(.*?), ", "")
   # Making a vector
@@ -43,14 +43,14 @@ check_coverage = function(df1, df2, on_col) {
   
 }
 
-get_artist_info = function (artist_ids_list, df_meta_artists = df_meta_artists) {
+get_artist_features = function (artist_ids_list, df_meta_artists = df_meta_artists) {
   
   # Getting the artist ids as a list
   artist_ids_list = unlist(artist_ids_list)
   
   artist_info = df_meta_artists %>%
     # Filtering for the artist ids in the questions
-    filter(artist_id %in% as.list(artist_ids_list)) %>%
+    filter(artist_id %in% artist_ids_list) %>%
     # Changing the data type for the followers for the aggregation
     mutate(followers = as.numeric(followers)) %>%
     # interpolation NA's with 0 since artist has no followers
@@ -64,6 +64,20 @@ get_artist_info = function (artist_ids_list, df_meta_artists = df_meta_artists) 
   
   # return (artist_info$total_followers, artist_info$avg_popularity, artist_info$unique_m_genre)
   return (as.list(artist_info))
+}
+
+get_artist_year_end_score = function(artist_ids_list, df_pop_artists = df_pop_artists) {
+  # Getting the artist ids as a list
+  artist_ids_list = unlist(artist_ids_list)
+  
+  # Getting the Average year end score of the artist
+  artist_info = df_pop_artists %>%
+    filter(artist_id %in% artist_ids_list) %>%
+    summarise(
+      avg_artist_year_end_score = mean(year_end_score, na.rm = TRUE)
+    )
+  
+  return (artist_info %>% pull(avg_artist_year_end_score))
 }
 
 evaluation_metrics = function(results_data) {
