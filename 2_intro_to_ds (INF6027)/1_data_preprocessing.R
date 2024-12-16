@@ -190,7 +190,7 @@ df_test <- df_meta_songs_encoded[-train_index, ]
 print (paste0("Training Data Shape :: ", nrow(df_train), ", ", length(df_train)))
 print (paste0("Testing Data Shape :: ", nrow(df_test), ", ", length(df_test)))
 
-# FOR RIDGE, LASSO, RANDOM FOREST AND XGB REGRESSION
+# FOR RANDOM FOREST AND XGB REGRESSION
 # Training and Testing Data for the models
 X_train = df_train %>% select(-c(popularity))
 X_test = df_test %>% select(-c(popularity))

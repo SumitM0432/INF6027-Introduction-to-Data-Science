@@ -94,3 +94,55 @@ evaluation_metrics = function(results_data) {
   print (paste0("R Squared Error :: ", round(rsq_val$.estimate, 3)))
   
 }
+
+pred_vs_actual_plot = function(results_data, model_name) {
+  
+  # Predicted vs Actual Plot
+  pred_v_act = ggplot(results_data, aes(x = target_values, y = predicted_values)) +
+    geom_point(alpha = 0.5, color = "turquoise3") +  # Points
+    geom_abline(slope = 1, intercept = 0, color = "red4", linetype = "dashed", linewidth = 1.2) +
+    labs(
+      title = "Predicted vs Actual Values",
+      x = "Actual Values",
+      y = "Predicted Values"
+    ) +
+    theme_minimal() +
+    theme(text = element_text(family = 'mono'),
+          plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
+          axis.text.x = element_text(size = 10, face = 'bold'),
+          axis.text.y = element_text(size = 10, face = 'bold'))
+  
+  # Plotting
+  plot(pred_v_act)
+  
+  # Saving the plot in a folder
+  ggsave(paste0("Predicted_v_Actual_" , model_name, ".jpeg"), pred_v_act, path = paste0(getwd(), "/Plots")) 
+}
+
+residual_plot = function(results_data, model_name) {
+  
+  # Calculating Residuals
+  results_data = results_data %>%
+    mutate(residuals = target_values - predicted_values)
+  
+  # Residuals Density/Histogram Plot
+  res_plot = ggplot(results_data, aes(x = residuals)) +
+    geom_histogram(fill = "steelblue", alpha = 0.5, bins = 60) +
+    geom_vline(xintercept = 0, color = "darkred", linetype = "dashed", linewidth = 1.2) +
+    labs(
+      title = "Residuals Distribution",
+      x = "Residuals",
+      y = "Frequency"
+    ) +
+    theme_minimal() +
+    theme(text = element_text(family = 'mono'),
+          plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
+          axis.text.x = element_text(size = 10, face = 'bold'),
+          axis.text.y = element_text(size = 10, face = 'bold'))
+  
+  # Plotting
+  plot(res_plot)
+  
+  # Saving the plot in a folder
+  ggsave(paste0("Residual_Plot_" , model_name, ".jpeg"), res_plot, path = paste0(getwd(), "/Plots")) 
+}

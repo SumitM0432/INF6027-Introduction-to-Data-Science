@@ -20,51 +20,9 @@ results_data = tibble(target_values = df_test$popularity,
 # Evaluation of the trained model
 evaluation_metrics(results_data)
 
-print(paste('--------------------------------', Sys.time(), 'RIDGE REGRESSION', '-----------'))
-
-# Training the ridge regression model
-ridge_model = regularization_reg(X_train = X_train, y_train = y_train_scaled, alpha = 0)
-
-# Model Definition Summary
-print (ridge_model)
-
-# Prediction using the trained model (Ridge Regression) and also descaling it than constraining the predictions for interpretability
-ridge_predictions_scaled = predict(ridge_model,
-                                    s = ridge_model$lambda.min, # Getting the minimum lambda (best lambda for the model)
-                                    newx = as.matrix(X_test))
-ridge_predictions = pmax(pmin(ridge_predictions_scaled * 100, 100), 0)
-
-# Making a tibble for evaluation and passing through the custom evaluation function
-results_data = tibble(target_values = y_test,
-                      predicted_values = data.table(ridge_predictions)$s1) %>%
-              # Converting the predicted values to numeric
-              mutate(predicted_values = as.numeric(predicted_values))
-
-# Evaluation of the trained model
-evaluation_metrics(results_data)
-
-print(paste('--------------------------------', Sys.time(), 'LASSO REGRESSION', '-----------'))
-
-# Training the lasso regression model
-lasso_model = regularization_reg(X_train = X_train, y_train = y_train_scaled, alpha = 1)
-
-# Model Definition Summary
-print (lasso_model)
-
-# Prediction using the trained model (Lasso Regression) and also descaling it than constraining the predictions for interpretability
-lasso_predictions_scaled <- predict(lasso_model,
-                             s = lasso_model$lambda.min, # Getting the minimum lambda (best lambda for the model)
-                             newx = as.matrix(X_test))
-lasso_predictions = pmax(pmin(lasso_predictions_scaled * 100, 100), 0)
-
-# Making a tibble for evaluation and passing through the custom evaluation function
-results_data = tibble(target_values = y_test,
-                      predicted_values = data.table(lasso_predictions)$s1) %>%
-              # Converting the predicted values to numeric
-              mutate(predicted_values = as.numeric(predicted_values))
-
-# Evaluation of the trained model
-evaluation_metrics(results_data)
+# Plotting and Saving Prediction and Actual Plot
+pred_vs_actual_plot(results_data = results_data, model_name = 'linear_reg')
+residual_plot(results_data = results_data, model_name = 'linear_reg')
 
 print(paste('--------------------------------', Sys.time(), 'RANDOM FOREST REGRESSION', '---'))
 
@@ -85,6 +43,10 @@ results_data = tibble(target_values = y_test,
 
 # Evaluation of the trained model
 evaluation_metrics(results_data)
+
+# Plotting and Saving Prediction and Actual Plot
+pred_vs_actual_plot(results_data = results_data, model_name = 'rf_reg')
+residual_plot(results_data = results_data, model_name = 'rf_reg')
 
 print(paste('--------------------------------', Sys.time(), 'XGB REGRESSION', '-------------'))
 
@@ -114,38 +76,12 @@ results_data = tibble(target_values = y_test,
 # Evaluation of the trained model
 evaluation_metrics(results_data)
 
+# Plotting and Saving Prediction and Actual Plot
+pred_vs_actual_plot(results_data = results_data, model_name = 'xgb_reg')
+residual_plot(results_data = results_data, model_name = 'xgb_reg')
+
 print(paste('--------------------------------', Sys.time(), 'SAVING MODELS', '--------------'))
 
 saveRDS(linear_model, "Results/lm_model_est_lyrics.rds")
-saveRDS(ridge_model, "Results/ridge_model_est_lyrics.rds")
-saveRDS(lasso_model, "Results/lasso_model_est_lyrics.rds")
 saveRDS(rf_model, "Results/rf_model_est_lyrics.rds")
 saveRDS(rf_model, "Results/xgb_model_est_lyrics.rds")
-
-print(paste('--------------------------------', Sys.time(), 'PLOTTING', '-------------------'))
-
-# Predicted vs Actual Plot
-ggplot(results_data, aes(x = target_values, y = predicted_values)) +
-  geom_point(alpha = 0.6, color = "steelblue") +  # Points
-  geom_abline(slope = 1, intercept = 0, color = "darkred", linetype = "dashed", linewidth = 1.2) +
-  labs(
-    title = "Predicted vs Actual Values",
-    x = "Actual Values",
-    y = "Predicted Values"
-  ) +
-  theme_minimal()
-
-# Calculating Residuals
-results_data = results_data %>%
-  mutate(residuals = target_values - predicted_values)
-
-# Residuals Density/Histogram Plot
-ggplot(results_data, aes(x = residuals)) +
-  geom_histogram(fill = "lightsteelblue4", alpha = 0.5, bins = 50) +
-  geom_vline(xintercept = 0, color = "darkred", linetype = "dashed", linewidth = 1.2) +
-  labs(
-    title = "Residuals Density Plot",
-    x = "Residuals",
-    y = "Density"
-  ) +
-  theme_minimal()
