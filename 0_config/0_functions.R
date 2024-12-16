@@ -119,6 +119,8 @@ pred_vs_actual_plot = function(results_data, model_name) {
   ggsave(paste0("Predicted_v_Actual_" , model_name, ".jpeg"), pred_v_act, path = paste0(getwd(), "/Plots")) 
 }
 
+# https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf -- used for colors
+
 residual_plot = function(results_data, model_name) {
   
   # Calculating Residuals

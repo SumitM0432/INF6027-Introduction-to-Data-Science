@@ -24,6 +24,32 @@ evaluation_metrics(results_data)
 pred_vs_actual_plot(results_data = results_data, model_name = 'linear_reg')
 residual_plot(results_data = results_data, model_name = 'linear_reg')
 
+# Plotting Feature Importance
+coefficients = coef(linear_model)
+
+feature_importance = data.frame(
+  Feature = names(coefficients)[-1],  # Exclude intercept
+  Importance = coefficients[-1]
+)
+
+linear_corr = ggplot(feature_importance, aes(x = reorder(Feature, Importance), y = Importance)) +
+  geom_bar(stat = "identity", fill = "lightseagreen") + # Using stat as identity to skip the aggregation since we already have values
+  coord_flip() +
+  labs(
+    title = "Feature Importance : Linear Regression ",
+    x = "Features",
+    y = "Coefficient Value"
+  ) +
+  theme_minimal() +
+  theme(text = element_text(family = 'mono'),
+        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
+        axis.text.x = element_text(size = 10, face = 'bold'),
+        axis.text.y = element_text(size = 10, face = 'bold'))
+
+plot(linear_corr)
+
+ggsave(paste0("Feature_Importance_linear_reg.jpeg"), linear_corr, path = paste0(getwd(), "/Plots")) 
+
 print(paste('--------------------------------', Sys.time(), 'RANDOM FOREST REGRESSION', '---'))
 
 # Training the random forest regression model
