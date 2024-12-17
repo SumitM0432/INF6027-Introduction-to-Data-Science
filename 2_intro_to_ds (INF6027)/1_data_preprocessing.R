@@ -1,5 +1,4 @@
 # DATA PREPROCESSING ------------------------------------------------------
-
 print(paste('--------------------------------', Sys.time(), 'ADDING SONGS FEATURES', '---'))
 # Dropping the null values
 df_meta_songs = df_meta_songs %>%
@@ -16,6 +15,7 @@ df_songs_max_year = df_pop_songs %>%
 df_pop_songs = df_pop_songs %>%
   left_join(df_songs_max_year, by = c('song_id')) %>%
   filter(year == max_year) %>%
+  rename("year_end_score_song" = "year_end_score") %>%
   select(-c(max_year)) %>%
   distinct()
 
@@ -65,9 +65,11 @@ df_pop_artists = df_pop_artists %>%
 df_meta_songs = df_meta_songs %>%
   rowwise() %>%
   # Getting the average year end score
-  mutate(avg_artist_year_end_score = list(get_artist_year_end_score(artist_id_vectors, df_pop_artists))) %>%
+  mutate(avg_artist_year_end_score = get_artist_year_end_score(artist_id_vectors, df_pop_artists)) %>%
   # Ungrouping
-  ungroup()
+  ungroup() %>%
+  # Converting to numeric datatype
+  mutate(avg_artist_year_end_score = as.numeric(avg_artist_year_end_score))
 
 print(paste('--------------------------------', Sys.time(), 'ADDING ALBUM FEATURES', '---'))
 # Joining with track records to get the album ids
@@ -95,7 +97,7 @@ df_lyrics = df_lyrics %>%
            strsplit("\\s+") %>%
            # Apply a function to each list of words
            lapply(function(words) 
-             # For each list of words, removing those that match the stopwords in English
+             # For each list of words, removing those that match the stop words in English
              paste(words[!words %in% stopwords("en")], collapse = " ")
            ) %>%
            # Creating a character vector from list
@@ -113,6 +115,8 @@ df_lyrics = df_lyrics %>%
 # - Objectivity (1 - Subjectivity)
 # - Word Count
 # - Lexical Diversity
+# - Average Word Length
+# - Repetition Ratio
 
 df_lyrics = df_lyrics %>%
   # Calculating Sentiment Polarity
@@ -136,8 +140,22 @@ lexical_df = df_lyrics %>%
 
 # Joining with main lyrical data table
 df_lyrics = df_lyrics %>%
-  left_join(lexical_df, by = c('song_id')) %>%
-  select(song_id, sentiment_polarity, objectivity, word_count, lexical_diversity)
+  left_join(lexical_df, by = c('song_id'))
+
+# Calculating average word length
+df_lyrics = df_lyrics %>%
+  mutate(avg_word_length = sapply(strsplit(cleaned_lyrics, "\\s+"), 
+                                  function(words) mean(nchar(words))))
+
+# Calculating repetition ratio
+df_lyrics = df_lyrics %>%
+  mutate(
+    total_words = sapply(strsplit(cleaned_lyrics, "\\s+"), length),
+    unique_words = sapply(strsplit(cleaned_lyrics, "\\s+"), function(words) length(unique(words)))
+  ) %>%
+  mutate(repetition_ratio = 1 - (unique_words/total_words))%>%
+  # Selecting the required columns
+  select(song_id, sentiment_polarity, objectivity, word_count, lexical_diversity, avg_word_length, repetition_ratio)
 
 # Final join to get the lyrical features combined with songs features we processed earlier
 df_meta_songs = df_meta_songs %>%
@@ -148,13 +166,13 @@ print(paste('--------------------------------', Sys.time(), 'FURTHER PROCESSING'
 df_meta_songs = df_meta_songs %>%
   select(-c(song_id, song_name, billboard, artists, artist_id_vectors, album_id))
 
-# One-Hot Encoding the categorical Variables
-df_meta_songs_encoded <- dummy_cols(df_meta_songs,
-                                    select_columns = c("explicit", "song_type"),
-                                    remove_first_dummy = FALSE) %>%
-  select(-c(explicit, song_type)) %>%
-  mutate(across(everything(), as.numeric))
-         
+# Label Encoding the songs_type and explicit columns
+df_meta_songs_encoded = df_meta_songs %>%
+  mutate(
+    explicit = ifelse(explicit == "True", 1, 0),  # TRUE as 1, FALSE as 0
+    song_type = ifelse(song_type == "Solo", 1, ifelse(song_type == "Collaboration", 2, NA))  # Solo as 1, Collaboration as 2
+  )
+
 # omitting the NA's
 df_meta_songs_encoded = na.omit(df_meta_songs_encoded)
 print (paste0("Final Dataset Size :: ", nrow(df_meta_songs_encoded)))
@@ -170,15 +188,15 @@ ggplot(data = melted_correlation_matrix, aes(x = Var1, y = Var2, fill = value)) 
     limit = c(-1, 1), space = "Lab", name = "Correlation"
   ) +
   labs(
-    title = "Correlation Matrix Heatmap",
+    title = "Correlation Heatmap",
     x = "Features",
     y = "Features"
   ) +
   theme_minimal() +  # Minimal theme for a clean look
-  theme(
-    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-    axis.text.y = element_text(size = 10)
-  )
+  theme(text = element_text(family = 'mono'),
+        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
+        axis.text.x = element_text(angle = 50, size = 10, face = 'bold', vjust = 1, hjust = 1),
+        axis.text.y = element_text(size = 10, face = 'bold'))
 
 print(paste('--------------------------------', Sys.time(), 'SPLITTING DATA INTO TRAIN AND TEST DATA', '-'))
 

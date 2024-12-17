@@ -24,15 +24,15 @@ evaluation_metrics(results_data)
 pred_vs_actual_plot(results_data = results_data, model_name = 'linear_reg')
 residual_plot(results_data = results_data, model_name = 'linear_reg')
 
-# Plotting Feature Importance
+# PLOTTING FEATURE IMPORTANCE
 coefficients = coef(linear_model)
 
-feature_importance = data.frame(
+feature_importance_linear = data.frame(
   Feature = names(coefficients)[-1],  # Exclude intercept
   Importance = coefficients[-1]
 )
 
-linear_corr = ggplot(feature_importance, aes(x = reorder(Feature, Importance), y = Importance)) +
+linear_imp = ggplot(feature_importance, aes(x = reorder(Feature, Importance), y = Importance)) +
   geom_bar(stat = "identity", fill = "lightseagreen") + # Using stat as identity to skip the aggregation since we already have values
   coord_flip() +
   labs(
@@ -46,9 +46,11 @@ linear_corr = ggplot(feature_importance, aes(x = reorder(Feature, Importance), y
         axis.text.x = element_text(size = 10, face = 'bold'),
         axis.text.y = element_text(size = 10, face = 'bold'))
 
-plot(linear_corr)
+# Plotting
+plot(linear_imp)
 
-ggsave(paste0("Feature_Importance_linear_reg.jpeg"), linear_corr, path = paste0(getwd(), "/Plots")) 
+# Saving the plot
+ggsave(paste0("Feature_Importance_linear_reg.jpeg"), linear_imp, path = paste0(getwd(), "/Plots")) 
 
 print(paste('--------------------------------', Sys.time(), 'RANDOM FOREST REGRESSION', '---'))
 
@@ -73,6 +75,37 @@ evaluation_metrics(results_data)
 # Plotting and Saving Prediction and Actual Plot
 pred_vs_actual_plot(results_data = results_data, model_name = 'rf_reg')
 residual_plot(results_data = results_data, model_name = 'rf_reg')
+
+# PLOTTING FEATURE IMPORTANCE
+# Extract feature importance
+rf_importance = randomForest::importance(rf_model)
+
+# Convert to a data frame
+feature_importance_rf = data.frame(
+  Feature = rownames(importance),
+  Importance = importance[, "IncNodePurity"]  # Mean Decrease Gini is a common metric
+)
+
+# Plot feature importance
+rf_imp = ggplot(feature_importance_rf, aes(x = reorder(Feature, Importance), y = Importance)) +
+  geom_bar(stat = "identity", fill = "lightseagreen") +
+  coord_flip() +
+  labs(
+    title = "Feature Importance : Random Forest",
+    x = "Features",
+    y = "Importance (IncNodePurity)"
+  ) +
+  theme_minimal() +
+  theme(text = element_text(family = 'mono'),
+        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
+        axis.text.x = element_text(size = 10, face = 'bold'),
+        axis.text.y = element_text(size = 10, face = 'bold'))
+
+# Plotting
+plot(rf_imp)
+
+# Saving the plot
+ggsave(paste0("Feature_Importance_rf_reg.jpeg"), rf_imp, path = paste0(getwd(), "/Plots")) 
 
 print(paste('--------------------------------', Sys.time(), 'XGB REGRESSION', '-------------'))
 
@@ -105,6 +138,34 @@ evaluation_metrics(results_data)
 # Plotting and Saving Prediction and Actual Plot
 pred_vs_actual_plot(results_data = results_data, model_name = 'xgb_reg')
 residual_plot(results_data = results_data, model_name = 'xgb_reg')
+
+# PLOT FEATURE IMPORTANCE
+# Extract feature importance
+xgb_importance = xgb.importance(model = xgb_model)
+
+# Convert importance matrix to data frame
+feature_importance_xgb = as.data.frame(xgb_importance)
+
+# Plot with ggplot2
+xgb_imp = ggplot(feature_importance_xgb, aes(x = reorder(Feature, Gain), y = Gain)) +
+  geom_bar(stat = "identity", fill = "lightseagreen") +
+  coord_flip() +
+  labs(
+    title = "Feature Importance : XGBOOST",
+    x = "Features",
+    y = "Importance (Gain)"
+  ) +
+  theme_minimal() +
+  theme(text = element_text(family = 'mono'),
+        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
+        axis.text.x = element_text(size = 10, face = 'bold'),
+        axis.text.y = element_text(size = 10, face = 'bold'))
+
+# Plotting
+plot(xgb_imp)
+
+# Saving the plot
+ggsave(paste0("Feature_Importance_xgb_reg.jpeg"), xgb_imp, path = paste0(getwd(), "/Plots")) 
 
 print(paste('--------------------------------', Sys.time(), 'SAVING MODELS', '--------------'))
 
