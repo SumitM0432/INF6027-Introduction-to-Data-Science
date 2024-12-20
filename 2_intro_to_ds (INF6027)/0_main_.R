@@ -18,14 +18,18 @@ print(paste(Sys.time(), ' :: DOWNLOADING THE DATA FROM THE DATABASE'))
 # Loading the Data from the Script
 source("../0_config/0_musicoset_data_loading.R", local = TRUE)
 
+print(paste(Sys.time(), ' :: EXPLORATORY DATA ANALYSIS'))
+# Script that includes all the EDA and Understanding (Note: This doesn't effect any other script)
+source("1_exploratory_data_analysis", local = TRUE)
+
 print(paste(Sys.time(), ' :: DATA PREPROCESSING'))
 # Running the Preprocessing and Features Engineering Script
-source("1_data_preprocessing.R")
+source("2_data_preprocessing.R")
 
 print(paste(Sys.time(), ' :: MODEL DEFINITIONS'))
 # Defining the models
-source("2_model_definition.R")
+source("3_model_definition.R")
 
 print(paste(Sys.time(), ' :: MODEL TRAINING AND EVALUATION'))
 # Training the machine learning model 
-source("3_training_evaluation.R")
+source("4_training_evaluation.R")

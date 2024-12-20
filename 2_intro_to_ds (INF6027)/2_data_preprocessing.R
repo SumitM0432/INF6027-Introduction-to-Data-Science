@@ -119,13 +119,13 @@ df_lyrics = df_lyrics %>%
 # - Repetition Ratio
 
 df_lyrics = df_lyrics %>%
-  # Calculating Sentiment Polarity
-  mutate(sentiment_polarity = get_sentiment(cleaned_lyrics, method = "syuzhet")) %>%
-  # Calculating Objectivity Score from the Subjectivity Score (Normalized)
-  mutate(subjectivity = get_sentiment(cleaned_lyrics, method = "afinn") / 100) %>%
-  mutate(objectivity = 1 - subjectivity) %>%
   # Calculating Word Count
-  mutate(word_count = str_count(cleaned_lyrics, "\\S+"))
+  mutate(word_count = str_count(cleaned_lyrics, "\\S+")) %>%
+  # Calculating Sentiment Polarity
+  mutate(sentiment_polarity = get_sentiment(cleaned_lyrics, method = "syuzhet") / word_count) %>%
+  # Calculating Objectivity Score from the Subjectivity Score (Normalized)
+  mutate(subjectivity = get_sentiment(cleaned_lyrics, method = "afinn") / word_count) %>%
+  mutate(objectivity = 1 - subjectivity)
 
 # Calculating the Lexical Diversity
 lexical_df = df_lyrics %>%
@@ -161,6 +161,9 @@ df_lyrics = df_lyrics %>%
 df_meta_songs = df_meta_songs %>%
   left_join(df_lyrics, by = c('song_id'))
 
+# Just Saving this dataset for EDA of lyrical features
+df_meta_songs_eda = copy(df_meta_songs)
+
 print(paste('--------------------------------', Sys.time(), 'FURTHER PROCESSING', '------'))
 # Removing the columns that won't be used for the training and testing
 df_meta_songs = df_meta_songs %>%
@@ -176,27 +179,6 @@ df_meta_songs_encoded = df_meta_songs %>%
 # omitting the NA's
 df_meta_songs_encoded = na.omit(df_meta_songs_encoded)
 print (paste0("Final Dataset Size :: ", nrow(df_meta_songs_encoded)))
-
-correlation_matrix = round(cor(df_meta_songs_encoded), 2)
-melted_correlation_matrix = melt(correlation_matrix) # Long Format
-
-ggplot(data = melted_correlation_matrix, aes(x = Var1, y = Var2, fill = value)) +
-  geom_tile(color = "white") +
-  geom_text(aes(label = sprintf("%.2f", value)), color = "gray0", size = 2) +
-  scale_fill_gradient2(
-    low = "steelblue", high = "darkred", mid = "white", midpoint = 0,
-    limit = c(-1, 1), space = "Lab", name = "Correlation"
-  ) +
-  labs(
-    title = "Correlation Heatmap",
-    x = "Features",
-    y = "Features"
-  ) +
-  theme_minimal() +  # Minimal theme for a clean look
-  theme(text = element_text(family = 'mono'),
-        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
-        axis.text.x = element_text(angle = 50, size = 10, face = 'bold', vjust = 1, hjust = 1),
-        axis.text.y = element_text(size = 10, face = 'bold'))
 
 print(paste('--------------------------------', Sys.time(), 'SPLITTING DATA INTO TRAIN AND TEST DATA', '-'))
 
@@ -224,5 +206,5 @@ df_train = df_train %>%
   select(-c(popularity))
 
 # Saving RData for decrease the data loading time
-tables_to_save <- c('df_meta_songs_encoded', 'X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test')
+tables_to_save <- c('X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test', 'df_meta_songs_eda')
 save(list = tables_to_save, file = paste0('RData/Processed_Music_Data.RData'))

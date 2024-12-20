@@ -1,14 +1,5 @@
-# Setting the Current Path
-if (interactive()) {
-  # If in RStudio, use rstudioapi
-  if ("rstudioapi" %in% rownames(installed.packages())) {
-    setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-  }
-}
-
 # Getting the libraries and the required functions
 source("../0_config/0_libraries.R", local = TRUE)
-source("../0_config/0_functions.R", local = TRUE)
 
 # Setting up the connection with the MySQL Server
 con = dbConnect(RMySQL::MySQL(),
