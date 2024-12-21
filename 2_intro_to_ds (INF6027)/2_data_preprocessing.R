@@ -214,24 +214,25 @@ df_lyrics = df_lyrics %>%
     repetition_ratio = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, repetition_ratio)
   )
 
-temp = copy(df_lyrics)
-temp2 = copy(df_meta_songs)
-
+# Selecting the required columns
 df_lyrics = df_lyrics %>%
-  # Selecting the required columns
   select(song_id, sentiment_polarity, objectivity, word_count, lexical_diversity, avg_word_length, repetition_ratio)
 
-# Final join to get the lyrical features combined with songs features we processed earlier
+# Final join to get the lyrical features combined with songs features we processed earlier and dropping NA's
 df_meta_songs = df_meta_songs %>%
-  left_join(df_lyrics, by = c('song_id'))
+  left_join(df_lyrics, by = c('song_id')) %>%
+  # Dropping the NA's where we can't calculate the lyrical features because the lyrical data is NULL for those songs
+  drop_na()
 
 # Just Saving this dataset for EDA of lyrical features
 df_meta_songs_eda = copy(df_meta_songs)
 
+print (paste0("Dataset Size After Feature Engineering :: ", nrow(df_meta_songs)))
+
 print(paste('--------------------------------', Sys.time(), 'FURTHER PROCESSING', '------'))
 # Removing the columns that won't be used for the training and testing
 df_meta_songs = df_meta_songs %>%
-  select(-c(song_id, song_name, billboard, artists, artist_id_vectors, album_id))
+  select(-c(song_id, song_name, billboard, artists, artist_id_vectors))
 
 # Label Encoding the songs_type and explicit columns
 df_meta_songs_encoded = df_meta_songs %>%
@@ -240,7 +241,7 @@ df_meta_songs_encoded = df_meta_songs %>%
     song_type = ifelse(song_type == "Solo", 1, ifelse(song_type == "Collaboration", 2, NA))  # Solo as 1, Collaboration as 2
   )
 
-# omitting the NA's
+# Finally omitting any NA's that are there left
 df_meta_songs_encoded = na.omit(df_meta_songs_encoded)
 print (paste0("Final Dataset Size :: ", nrow(df_meta_songs_encoded)))
 
