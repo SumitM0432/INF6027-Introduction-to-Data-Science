@@ -1,8 +1,8 @@
 # DATA PREPROCESSING ------------------------------------------------------
 print(paste('--------------------------------', Sys.time(), 'ADDING SONGS FEATURES', '---'))
-# Dropping the null values
+# Dropping the null values (only one where the song_id is just and empty string)
 df_meta_songs = df_meta_songs %>%
-  drop_na()
+  filter(!song_id %in% c(""))
 
 # Getting the maximum year for the every song by grouping and summarizing
 df_songs_max_year = df_pop_songs %>%
@@ -11,7 +11,7 @@ df_songs_max_year = df_pop_songs %>%
     max_year = max(year)
   )
 
-# Joining the maximum year and filtering on it to get the latest score year_end_score
+# Joining the maximum year and filtering on it to get the latest year_end_score
 df_pop_songs = df_pop_songs %>%
   left_join(df_songs_max_year, by = c('song_id')) %>%
   filter(year == max_year) %>%
@@ -23,17 +23,55 @@ df_pop_songs = df_pop_songs %>%
 df_meta_songs = df_meta_songs %>%
   left_join(df_pop_songs, by = c('song_id'))
 
+# Imputing the Null year_end_score_song and year
+# For year_end_score we will calculate the average year end score for every popularity rating and impute the NA values based on that
+# For year we will take the median of the year column and impute NA Values
+df_pop_impute = df_pop_songs %>%
+  left_join(df_meta_songs %>% select(song_id, popularity) %>% distinct(), by = c('song_id')) %>%
+  mutate(popularity = as.character(popularity)) %>%
+  group_by(popularity) %>%
+  summarize(
+    avg_yes = mean(year_end_score_song, na.rm = TRUE)
+  )
+
+df_meta_songs = df_meta_songs %>%
+  # Joining the df_pop_impute to get the values to fill NA
+  left_join(df_pop_impute %>% mutate(popularity = as.integer(popularity)), by = c('popularity')) %>%
+  mutate(
+    # Imputing the NA's with the appropriate values
+    year_end_score_song = ifelse(is.na(year_end_score_song), as.integer(avg_yes), year_end_score_song),
+    # Imputing the year with the median of the years
+    year = ifelse(is.na(year), median(year, na.rm = TRUE), year)
+  ) 
+
 # Adding the acoustic features to the data
 df_meta_songs = df_meta_songs %>%
   left_join(df_acoustic_features %>% distinct(), by = c('song_id'))
 
 print(paste('--------------------------------', Sys.time(), 'ADDING ARTISTS FEATURES', '-'))
+
 # Converting artist string to a list and counting the number of unique artists there are
 df_meta_songs = df_meta_songs %>%
   # Getting the Artists IDs
   mutate(artist_id_vectors := mapply(extract_artist, artists)) %>%
   # Counting the number of artist that has worked on that song
   mutate(num_artist = str_count(as.character(artist_id_vectors), ",") + 1)
+
+# Changing the inconsistent band names and also giving a new category to the artist type as not given" if there's '-'
+# Doing the same with '-' in main_genre as 'not given'
+df_meta_artists = df_meta_artists %>%
+  # Changing 'band' to band
+  mutate(artist_type = ifelse(artist_type == "'band'", 'band', artist_type)) %>%
+  # Changing the NA given as '-'
+  mutate(artist_type = ifelse(artist_type == '-', 'not given', artist_type)) %>%
+  # Changing the NA given as '-'
+  mutate(main_genre = ifelse(main_genre == '-', 'not given', main_genre))
+  
+# Adjusting follower column since it's character with some strings as 'None'
+df_meta_artists = df_meta_artists %>%
+  mutate(followers = ifelse(followers == 'None', '0', followers)) %>%
+  # Changing from character to integer
+  mutate(followers = as.integer(followers))
 
 # Making new features like the total followers of the artists involved, their average popularity and there top unique music genres
 df_meta_songs = df_meta_songs %>%
@@ -42,11 +80,17 @@ df_meta_songs = df_meta_songs %>%
   mutate(artist_info = list(get_artist_features(artist_id_vectors, df_meta_artists))) %>%
   mutate(total_artist_followers = artist_info$total_follower,
          avg_artist_popularity = artist_info$avg_popularity,
-         unique_artist_m_genre = artist_info$unique_m_genre) %>%
+         unique_artist_main_genre = artist_info$unique_main_genre,
+         unique_artist_type = artist_info$unique_diff_artist) %>%
   # Removing redundant column
   select(-c(artist_info)) %>%
   # Ungrouping
   ungroup()
+
+# Filling Nulls of avg_popularity with 0 since we don't have data on the artist
+# Note: there are not a lot of null in this column so we can safely put 0
+df_meta_songs = df_meta_songs %>%
+  mutate(avg_artist_popularity = ifelse(is.na(avg_artist_popularity), 0, avg_artist_popularity))
 
 # Getting the maximum year for the every artist by grouping and summarizing
 df_pop_artist_max_year = df_pop_artists %>%
@@ -62,13 +106,15 @@ df_pop_artists = df_pop_artists %>%
   select(-c(max_year)) %>%
   distinct()
 
+# Getting the average artist year end score and we take the latest score for each artist and then take the average since
+# There could be more than 1 artist per song
 df_meta_songs = df_meta_songs %>%
   rowwise() %>%
   # Getting the average year end score
   mutate(avg_artist_year_end_score = get_artist_year_end_score(artist_id_vectors, df_pop_artists)) %>%
   # Ungrouping
   ungroup() %>%
-  # Converting to numeric datatype
+  # Converting to integer datatype
   mutate(avg_artist_year_end_score = as.numeric(avg_artist_year_end_score))
 
 print(paste('--------------------------------', Sys.time(), 'ADDING ALBUM FEATURES', '---'))
@@ -77,6 +123,27 @@ df_meta_songs = df_meta_songs %>%
   left_join(df_meta_tracks %>% select(song_id, album_id, track_number), by = c('song_id'))
 
 # 9105/20405 -> 44.6%
+# temp = df_meta_songs %>%
+#   left_join(df_meta_albums %>% select(album_id, total_tracks, album_type), by = c('album_id'))
+# 
+# # Getting the maximum year for the every song by grouping and summarizing
+# df_album_max_year = df_pop_albums %>%
+#   group_by(album_id) %>%
+#   summarise(
+#     max_year = max(year)
+#   )
+# 
+# # Joining the maximum year and filtering on it to get the latest year_end_score
+# temp2 = df_pop_albums %>%
+#   left_join(df_album_max_year, by = c('album_id')) %>%
+#   filter(year == max_year) %>%
+#   rename("year_end_score_album" = "year_end_score") %>%
+#   select(-c(max_year)) %>%
+#   distinct()
+# 
+# temp_3= df_meta_songs %>%
+#   left_join(temp2 %>% distinct(), by = c('album_id'))
+# 
 # temp = df_meta_songs %>%
 #   left_join(df_meta_albums %>% select(album_id, total_tracks, album_type), by = c('album_id'))
 

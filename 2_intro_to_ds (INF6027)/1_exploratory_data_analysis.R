@@ -261,25 +261,6 @@ df_meta_songs_eda %>%
 
 #### SONG FEATURES -------------------------------------------------------------
 
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 # FINAL CORRELATION HEATMAP
 correlation_matrix = round(cor(df_meta_songs_encoded), 2)
 melted_correlation_matrix = melt(correlation_matrix) # Long Format
