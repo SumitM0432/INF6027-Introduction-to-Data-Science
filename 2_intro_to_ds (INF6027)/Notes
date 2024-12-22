@@ -1,0 +1,21 @@
+IncNodePurity (RANDOM FOREST)
+
+In Random Forest regression, IncNodePurity refers to the increase in node purity for a particular feature when it is used to split the data. It measures how much that feature contributes to reducing the impurity (e.g., variance) in the predictions, and it's a commonly used metric for feature importance in Random Forest models.
+
+Gain (XGBOOST)
+The gain in XGBoost is commonly used for feature importance because it measures how much each feature contributes to the reduction of the objective function (e.g., mean squared error for regression) across all the trees in the ensemble. This makes it a direct and interpretable indicator of a feature’s predictive power.
+
+https://github.com/yashrajkakkad/song-popularity-prediction
+---
+
+Pipeline
+trashgarbage865@gmail.com
+qwe234@
+
+---
+for dataset
+
+https://www.coingecko.com/en/api
+https://www.unriddle.ai/pricing
+
+

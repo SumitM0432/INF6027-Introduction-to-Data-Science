@@ -1,0 +1,104 @@
+## Illustration of Methodology
+
+2.1.1 Data Source and Gathering
+
+The data that has been used is called “MusicOSet music dataset” [1]. This dataset have different musical elements consisting of Music data, Albums Data and Artist Data which also include the acoustic and lyrical data for the music which makes it perfect for music data mining. This also have metadata for every aspect of the element which makes it quite useful for features engineering.
+
+The data is available as CSV and SQL script that generates the data. In this project, the SQL Script is used which ran on MySQL Server to create the data on the database called ‘musicoset’ which is then used in the R scripts to ingest directly into the R environment, so the further processing and mining can be done. Once Ingested, the data was converted to data table for high performance manipulation and for this we have use the library called **data.table** and then saved as RData, ensuring that the coming scripts can just use the RData and don’t have to load the data again and again which could be time taking.
+
+For this SQL database ingestion, **RMySQL** library is used and specifically it’s **dbConnect()** and **dbSendQuery()** to connect to the database and send query request to the SQL server respectively.  SQL was chosen over CSV files to efficiently handle the relational structure of the MusicOSet dataset, which spans multiple interrelated tables. SQL enables selective data retrieval through optimized queries, reducing memory consumption and processing redundant data. Additionally, SQL provides a reproducible framework that is scalable.
+
+This process is done in the script called “**0_musicoset_data_loading.R**”
+
+[? Example of the dataset]
+
+2.1.2 Exploratory Data Analysis
+
+(Something we can complete at the END)
+
+2.1.3 Data preprocessing and Cleaning
+
+The data preprocessing is done in “**2_data_preprocessing.R”.** The aim is to predict the song popularity, so we need distinct song_ids to work with, so firstly we dropped the rows that doesn’t have any song_ids, fortunately there was only one datapoint with an empty string in song_id, so we dropped it.
+
+Then comes the process of adding songs features, artist characteristics, acoustic features, and then finally the lyrical features that we will engineer. Firstly, we add the songs features like the latest year_end_score and year for the songs from df_pop_songs. The latest year_end_score is taken to capture the most uptodate status of the song sine the there were several year_end_score given for different years and for the songs that doesn’t have the year_end_score available we impute the values with average year_end_score with the songs have the same popularity because this preserved the relationship between popularity and year_end_score furthermore, the missing values for years were replaced with median which robustly handles outliers. afterwards we joined the acoustic features to the dataset such as tempo, danceability and enery.
+
+Then comes the artist features, Firstly we clean up the artist dataset and make it more consistent for example the artist_type has a few null which are given as a string as ‘-’ so these are given a new category called ‘not given’, this is done since we can safely assume that an artist has to be of some category and we don’t have to drop it furthermore, we have to change one the artist time ‘band’ which was inconsistent. Then, the follower’s data type as change to numeric since it can only be a numeric character but while doing that, it was realised there were inconsistent strings as ‘None’ which is nothing just 0 followers so that is also made consistent.
+
+Then comes the aggregation and addition of these artist features, why aggregation?, There’s one thing to note that one song can have more than one artist, and since the artist data is given on an artist level to join these features to song, we need to aggregate whenever there’s more than one artist involved in the song making.
+
+We added 6 features after aggregation:
+
+- **num_artist**: Number of artists that collaborated.
+    
+    *This captures the scale of collaboration, which can influence a song’s appeal and reach.*
+    
+- **total_artist_followers**: Total number of followers of the contributing artists.
+    
+    *A higher follower count indicates a larger fanbase, potentially contributing to a song’s popularity.*
+    
+- **avg_artist_popularity**: Average popularity score of the contributing artists.
+    
+    *Popular artists often bring a significant boost to a song’s visibility and success.*
+    
+- **unique_artist_main_genre**: Number of unique main genres of the contributing artists.
+    
+    *Diverse genres in collaboration can attract a broader audience and impact popularity.*
+    
+- **unique_artist_type**: Number of unique artist types involved.
+    
+    *Including varied artist types (e.g., bands, solo singers) enriches the song's creative dimensions.*
+    
+- **avg_artist_year_end_score**: Average latest year-end score of the artists collaborating in the song.
+    
+    *Using the latest score ensures the most up-to-date representation of an artist’s impact on song success.*
+    
+    For the corner cases where there was no year_end_score given for the artist, we imputed those values with the mean of the average year_end_score of the artist. We used mean here to reflect the overall trend in the artist score and since it also a representative value.
+    
+    The lyrical features are not available in the default data so we engineer them since we have a research question for that. This process is given in the next section “Feature Engineering”.
+    
+    After the all the data preprocessing, cleaning and features engineering is done, the data is split into 70:30 ratio which adhere to the standard data science practice since this ensure that sufficient data is there for model training meanwhile enough is present for testing the accuracy of the models.
+    
+    2.1.4 Lyrical Feature Engineering
+    
+    This features engineering is carried out to derive meaningful variables from the dataset specifically from the lyrical text data which aligns with our research question.
+    
+    In the previous section we have done some features engineering as well where we aggregated the artist features to include in the analysis, but here we have use only the lyrics text data.
+    
+    [?example of lyrical data]
+    
+    Firstly, we have cleaned the lyrical data that is given in the data table df_lyrics. The cleaning for this text data is done in steps given below.
+    
+    1. Standardizing Text:
+        - To standardize the text, we have removed the special characters and punctuation. This is done to have uniform text representation and also it’s a common NLP practice.
+    2. Handling the Non-Lyrical Entities (Corner Cases):
+        - While doing the analysis I came across some corner cases where the the lyrics are given as “”, “ssss”, and “instrumental”/”instrumental tracks” which are invalid or non-lyrical.
+        - For these cases all the values for the derived features were set to neutral default values since we can’t identify features when we don’t have text for instance the sentiment of the lyrics can’t be identified so they were given a neutral values. This prevents bias and make sure these songs doesn’t create skew features distribution.
+    3. Stopwords handling:
+        - Stopwords were retained for some features to get the original word count but removed for others like lexical diversity. Retention of stopwords give a more accurate total word count when required. so we end up having two columns with lyrics with and without stopwords so they can be used for the respective features.
+    
+    After completing the cleaning of the text data, relevant features were engineered, carefully selected based on their potential utility and alignment with the research objectives. These features are given below:
+    
+    1. Sentiment Polarity:
+        - The sentiment polarity measure the overall emotional tone of the lyrics, this features is important because emotionally charged lyrics may resonate with the listener and might affect it’s popularity. These are calculated using Syuzhet package, and then they are normalized using the word count (with stop words) [?why normalization]
+    2. Objectivity:
+        - This features tells use the neutrality of the lyrics since we know the neutral lyrics can target a broader audience but subjective lyrics can evoke stronger emotions which can lead to a change in the popularity. Objectivity is also normalized with the word count (including stop words) [?why normalization]
+    3. Word Count:
+        - This is the total number of words including the stop words and this helps in capturing the overall verbosity of the lyrics which reflects storytelling complexity and lyrical density.
+    4. Lexical Diversity
+        - Lexical diversity captures the linguistic variety. High diversity can make a song unique and engaging. Here, we use the Type-token Ratio, which is the ratio of the number of unique words to the number of total words. Here the stop words are included as well.
+    5. Average Word Length:
+        - This features captures the mean number of characters per word (including the stop words). Longer words may indicate sophistication in lyrical composition.
+    6. Repetition Ratio:
+        - Finally, repetition ration captures the proportion of the repeated words in the lyrics. The rationale behind it is that the repetition enhances the catchiness so called memorability of the songs which can directly have a correlation with popularity. for instance bum bum tum tum by Mc Fioti, has been a big hit but with repeated lyrics.
+    
+    After the feature are engineered, we join the main lyrical features with the other features. One thing to note here, there are about 3.6% of the songs that doesn’t have any entry in the lyrical database. Since these datapoints lacked corresponding data in the lyrical dataset, it made it impossible to derive meaning features from them and imputing them would create artificial data and could distort the analysis. So we dropped them as the standard data preprocessing practice of dropping entries when the proportion of missing data is less than 5% [2].
+    
+    [? Final table of how dataset looked] 
+    
+    ref
+    
+    [1] https://marianaossilva.github.io/DSW2019/index.html
+    
+    [2] Bridging the Data Gap: How to Deal with Missing Data in Observational Studies
+    
+    (https://www.hubresearch.ca/bridging-the-data-gap-how-to-deal-with-missing-data-in-observational-studies/?utm_source=chatgpt.com)
