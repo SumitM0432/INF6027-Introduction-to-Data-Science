@@ -119,7 +119,7 @@ params <- list(
 )
 
 # Training the XGB regression model
-xgb_model = xgb_reg(params = params, X_train = X_train, y_train = y_train_scaled, nrounds = 200)
+xgb_model = xgb_reg(params = params, X_train = X_train, y_train = y_train_scaled, nrounds = 100)
 
 # Model Definition Summary
 print(xgb_model)
@@ -171,4 +171,4 @@ print(paste('--------------------------------', Sys.time(), 'SAVING MODELS', '--
 
 saveRDS(linear_model, "Trained_Models/lm_model_est_lyrics.rds")
 saveRDS(rf_model, "Trained_Models/rf_model_est_lyrics.rds")
-saveRDS(rf_model, "Trained_Models/xgb_model_est_lyrics.rds")
+saveRDS(xgb_model, "Trained_Models/xgb_model_est_lyrics.rds")
