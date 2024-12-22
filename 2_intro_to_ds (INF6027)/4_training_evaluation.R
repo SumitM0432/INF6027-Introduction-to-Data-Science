@@ -109,17 +109,35 @@ ggsave(paste0("Feature_Importance_rf_reg.jpeg"), rf_imp, path = paste0(getwd(), 
 
 print(paste('--------------------------------', Sys.time(), 'XGB REGRESSION', '-------------'))
 
-# XGBOOST Parameters
-params <- list(
-  objective = "reg:squarederror", 
-  eta = 0.1,                       
-  max_depth = 6,                   
-  subsample = 0.8,
-  colsample_bytree = 0.8
+# Parameter grid to test and tune
+parameter_grid = expand.grid(
+  nrounds = c(100, 150, 200),       # Fixed rounds for simplicity
+  max_depth = c(4, 5, 6),       # Optimal value based on prior knowledge or exploration
+  eta = c(0.05, 0.1, 0.15),           # Learning rate
+  gamma = c(0, 1),         # Regularization term
+  colsample_bytree = c(0.7, 0.8), # Subsampling for features
+  min_child_weight = c(3, 5),   # Minimum child weight
+  subsample = c(0.7, 0.8)      # Subsampling for rows
 )
 
-# Training the XGB regression model
-xgb_model = xgb_reg(params = params, X_train = X_train, y_train = y_train_scaled, nrounds = 100)
+# Doing 5 Folds cross-validation control
+train_control = trainControl(
+  method = "cv",          # Cross-validation
+  number = 5,             # 5 folds
+  verboseIter = TRUE,     # Show progress
+  allowParallel = TRUE    # Enable parallel processing
+)
+
+# Training the XGB regression model and tuning it
+# This will test all the hyperparameter given and extract the best model that is trained on this cross validation set
+xgb_result = xgb_tuning_simple(
+  X_train = X_train,
+  y_train_scaled = y_train_scaled,
+  parameter_grid = parameter_grid,
+  train_control = train_control
+)
+# Extract the best model
+xgb_model = xgb_result$focused$bestTune
 
 # Model Definition Summary
 print(xgb_model)

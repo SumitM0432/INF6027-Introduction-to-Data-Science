@@ -22,15 +22,18 @@ random_forest_reg = function(X_train, y_train, n_tree) {
 
 # XGBOOST MODEL ----------------------------------------------------------------
 
-# XGB Regressor Model Definition
-xgb_reg = function(params, X_train, y_train, nrounds, verbose = 0) {
-  xgb_model = xgboost(
-                data = as.matrix(X_train),
-                label = as.matrix(y_train),
-                params = params,
-                nrounds = nrounds,                   
-                verbose = verbose                     
-              )
+# XGB Regressor Model Definition with hyperparameter tuning
+xgb_reg_tuning = function(X_train, y_train_scaled, parameter_grid, train_control) {
   
-  return (xgb_model)
+  # Perform parameter tuning
+  xgb_tuned = train(
+    x = as.matrix(X_train),
+    y = y_train_scaled,
+    method = "xgbTree",
+    trControl = train_control,
+    tuneGrid = parameter_grid
+  )
+  
+  # Return the models trained
+  return (xgb_tuned)
 }
