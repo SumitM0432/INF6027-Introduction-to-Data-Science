@@ -9,27 +9,10 @@ Linear Regression :: -----------------------
 [1] "Mean Absolute Error :: 11.1"
 [1] "R Squared Error :: 0.61"
 
-Ridge Regression :: -----------------------
-
-[1] "Root Mean Squared Error :: 13.85"
-[1] "Mean Absolute Error :: 11.106"
-[1] "R Squared Error :: 0.607"
-
- -- Lyrics
-[1] "Root Mean Squared Error :: 13.894"
-[1] "Mean Absolute Error :: 11.183"
-[1] "R Squared Error :: 0.608"
-
-Lasso Regression :: -----------------------
-
-[1] "Root Mean Squared Error :: 13.801"
-[1] "Mean Absolute Error :: 11.043"
-[1] "R Squared Error :: 0.608"
-
- -- Lyrics
-[1] "Root Mean Squared Error :: 13.835"
-[1] "Mean Absolute Error :: 11.108"
-[1] "R Squared Error :: 0.61"
+ -- After Feature Eng and Cleaning a bit more
+[1] "Root Mean Squared Error :: 7.631"
+[1] "Mean Absolute Error :: 5.708"
+[1] "R Squared Error :: 0.879"
 
 Random Forest :: -----------------------
 
@@ -52,3 +35,8 @@ XGBoost :: -----------------------
 [1] "Root Mean Squared Error :: 12.516"
 [1] "Mean Absolute Error :: 9.779"
 [1] "R Squared Error :: 0.681"
+
+-- After Feature Eng and Cleaning a bit more
+[1] "Root Mean Squared Error :: 0.641"
+[1] "Mean Absolute Error :: 0.467"
+[1] "R Squared Error :: 0.999"

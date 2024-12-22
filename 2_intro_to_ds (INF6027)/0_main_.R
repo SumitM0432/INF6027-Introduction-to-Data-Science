@@ -20,7 +20,7 @@ source("../0_config/0_musicoset_data_loading.R", local = TRUE)
 
 print(paste(Sys.time(), ' :: EXPLORATORY DATA ANALYSIS'))
 # Script that includes all the EDA and Understanding (Note: This doesn't effect any other script)
-source("1_exploratory_data_analysis", local = TRUE)
+# source("1_exploratory_data_analysis", local = TRUE)
 
 print(paste(Sys.time(), ' :: DATA PREPROCESSING'))
 # Running the Preprocessing and Features Engineering Script
