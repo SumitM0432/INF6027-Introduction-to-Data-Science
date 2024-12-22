@@ -1,8 +1,8 @@
 # DATA PREPROCESSING ------------------------------------------------------
 print(paste('--------------------------------', Sys.time(), 'ADDING SONGS FEATURES', '---'))
-# Dropping the null values
+# Dropping the null values (only one where the song_id is just and empty string)
 df_meta_songs = df_meta_songs %>%
-  drop_na()
+  filter(!song_id %in% c(""))
 
 # Getting the maximum year for the every song by grouping and summarizing
 df_songs_max_year = df_pop_songs %>%
@@ -11,7 +11,7 @@ df_songs_max_year = df_pop_songs %>%
     max_year = max(year)
   )
 
-# Joining the maximum year and filtering on it to get the latest score year_end_score
+# Joining the maximum year and filtering on it to get the latest year_end_score
 df_pop_songs = df_pop_songs %>%
   left_join(df_songs_max_year, by = c('song_id')) %>%
   filter(year == max_year) %>%
@@ -23,17 +23,55 @@ df_pop_songs = df_pop_songs %>%
 df_meta_songs = df_meta_songs %>%
   left_join(df_pop_songs, by = c('song_id'))
 
+# Imputing the Null year_end_score_song and year
+# For year_end_score we will calculate the average year end score for every popularity rating and impute the NA values based on that
+# For year we will take the median of the year column and impute NA Values
+df_pop_impute = df_pop_songs %>%
+  left_join(df_meta_songs %>% select(song_id, popularity) %>% distinct(), by = c('song_id')) %>%
+  mutate(popularity = as.character(popularity)) %>%
+  group_by(popularity) %>%
+  summarize(
+    avg_yes = mean(year_end_score_song, na.rm = TRUE)
+  )
+
+df_meta_songs = df_meta_songs %>%
+  # Joining the df_pop_impute to get the values to fill NA
+  left_join(df_pop_impute %>% mutate(popularity = as.integer(popularity)), by = c('popularity')) %>%
+  mutate(
+    # Imputing the NA's with the appropriate values
+    year_end_score_song = ifelse(is.na(year_end_score_song), as.integer(avg_yes), year_end_score_song),
+    # Imputing the year with the median of the years
+    year = ifelse(is.na(year), median(year, na.rm = TRUE), year)
+  ) 
+
 # Adding the acoustic features to the data
 df_meta_songs = df_meta_songs %>%
   left_join(df_acoustic_features %>% distinct(), by = c('song_id'))
 
 print(paste('--------------------------------', Sys.time(), 'ADDING ARTISTS FEATURES', '-'))
+
 # Converting artist string to a list and counting the number of unique artists there are
 df_meta_songs = df_meta_songs %>%
   # Getting the Artists IDs
   mutate(artist_id_vectors := mapply(extract_artist, artists)) %>%
   # Counting the number of artist that has worked on that song
   mutate(num_artist = str_count(as.character(artist_id_vectors), ",") + 1)
+
+# Changing the inconsistent band names and also giving a new category to the artist type as not given" if there's '-'
+# Doing the same with '-' in main_genre as 'not given'
+df_meta_artists = df_meta_artists %>%
+  # Changing 'band' to band
+  mutate(artist_type = ifelse(artist_type == "'band'", 'band', artist_type)) %>%
+  # Changing the NA given as '-'
+  mutate(artist_type = ifelse(artist_type == '-', 'not given', artist_type)) %>%
+  # Changing the NA given as '-'
+  mutate(main_genre = ifelse(main_genre == '-', 'not given', main_genre))
+  
+# Adjusting follower column since it's character with some strings as 'None'
+df_meta_artists = df_meta_artists %>%
+  mutate(followers = ifelse(followers == 'None', '0', followers)) %>%
+  # Changing from character to integer
+  mutate(followers = as.integer(followers))
 
 # Making new features like the total followers of the artists involved, their average popularity and there top unique music genres
 df_meta_songs = df_meta_songs %>%
@@ -42,11 +80,17 @@ df_meta_songs = df_meta_songs %>%
   mutate(artist_info = list(get_artist_features(artist_id_vectors, df_meta_artists))) %>%
   mutate(total_artist_followers = artist_info$total_follower,
          avg_artist_popularity = artist_info$avg_popularity,
-         unique_artist_m_genre = artist_info$unique_m_genre) %>%
+         unique_artist_main_genre = artist_info$unique_main_genre,
+         unique_artist_type = artist_info$unique_diff_artist) %>%
   # Removing redundant column
   select(-c(artist_info)) %>%
   # Ungrouping
   ungroup()
+
+# Filling Nulls of avg_popularity with 0 since we don't have data on the artist
+# Note: there are not a lot of null in this column so we can safely put 0
+df_meta_songs = df_meta_songs %>%
+  mutate(avg_artist_popularity = ifelse(is.na(avg_artist_popularity), 0, avg_artist_popularity))
 
 # Getting the maximum year for the every artist by grouping and summarizing
 df_pop_artist_max_year = df_pop_artists %>%
@@ -62,23 +106,21 @@ df_pop_artists = df_pop_artists %>%
   select(-c(max_year)) %>%
   distinct()
 
+# Getting the average artist year end score and we take the latest score for each artist and then take the average since
+# There could be more than 1 artist per song
 df_meta_songs = df_meta_songs %>%
   rowwise() %>%
   # Getting the average year end score
   mutate(avg_artist_year_end_score = get_artist_year_end_score(artist_id_vectors, df_pop_artists)) %>%
   # Ungrouping
   ungroup() %>%
-  # Converting to numeric datatype
-  mutate(avg_artist_year_end_score = as.numeric(avg_artist_year_end_score))
-
-print(paste('--------------------------------', Sys.time(), 'ADDING ALBUM FEATURES', '---'))
-# Joining with track records to get the album ids
-df_meta_songs = df_meta_songs %>%
-  left_join(df_meta_tracks %>% select(song_id, album_id, track_number), by = c('song_id'))
-
-# 9105/20405 -> 44.6%
-# temp = df_meta_songs %>%
-#   left_join(df_meta_albums %>% select(album_id, total_tracks, album_type), by = c('album_id'))
+  # Converting to integer datatype
+  mutate(avg_artist_year_end_score = as.numeric(avg_artist_year_end_score)) %>%
+  # Also filling the nulls with avg
+  mutate(avg_artist_year_end_score = ifelse(is.na(avg_artist_year_end_score),
+                                            mean(avg_artist_year_end_score, na.rm = TRUE),
+                                            avg_artist_year_end_score)
+         )
 
 print(paste('--------------------------------', Sys.time(), 'ADDING LYRICAL FEATURES', '-'))
 
@@ -88,7 +130,9 @@ df_lyrics = df_lyrics %>%
   # Removing the Unwanted Character except letters, and numbers from the lyrics
   mutate(cleaned_lyrics = gsub("[^a-zA-Z0-9\\s]", " ", lyrics)) %>%
   # Converting the lyrics to lower case
-  mutate(cleaned_lyrics = tolower(cleaned_lyrics))
+  mutate(cleaned_lyrics = tolower(cleaned_lyrics)) %>%
+  # Making a new lyrics column to calculate the features where stop words also plays an important role
+  mutate(cleaned_lyrics_stop = cleaned_lyrics)
 
 # Removing Stop words
 df_lyrics = df_lyrics %>%
@@ -106,9 +150,11 @@ df_lyrics = df_lyrics %>%
 # Removing extra white spaces
 df_lyrics = df_lyrics %>%
   # Multiple spaces between words
-  mutate(cleaned_lyrics = gsub("\\s+", " ", cleaned_lyrics)) %>%
+  mutate(cleaned_lyrics = gsub("\\s+", " ", cleaned_lyrics),
+         cleaned_lyrics_stop = gsub("\\s+", " ", cleaned_lyrics_stop)) %>%
   # Leading and Trailing spaces
-  mutate(cleaned_lyrics = trimws(cleaned_lyrics))
+  mutate(cleaned_lyrics = trimws(cleaned_lyrics),
+         cleaned_lyrics_stop = trimws(cleaned_lyrics_stop))
 
 # EXTRACTING THE FEATURES
 # - Sentiment Polarity
@@ -119,18 +165,18 @@ df_lyrics = df_lyrics %>%
 # - Repetition Ratio
 
 df_lyrics = df_lyrics %>%
-  # Calculating Sentiment Polarity
-  mutate(sentiment_polarity = get_sentiment(cleaned_lyrics, method = "syuzhet")) %>%
+  # Calculating Word Count (including stop words to look at the features holistically)
+  mutate(word_count = str_count(cleaned_lyrics_stop, "\\S+")) %>%
+  # Calculating Sentiment Polarity (without stop words since stop words doesn't have any sentiment)
+  mutate(sentiment_polarity = get_sentiment(cleaned_lyrics, method = "syuzhet") / word_count) %>%
   # Calculating Objectivity Score from the Subjectivity Score (Normalized)
-  mutate(subjectivity = get_sentiment(cleaned_lyrics, method = "afinn") / 100) %>%
-  mutate(objectivity = 1 - subjectivity) %>%
-  # Calculating Word Count
-  mutate(word_count = str_count(cleaned_lyrics, "\\S+"))
+  mutate(subjectivity = get_sentiment(cleaned_lyrics, method = "afinn") / word_count) %>%
+  mutate(objectivity = 1 - subjectivity)
 
-# Calculating the Lexical Diversity
+# Calculating the Lexical Diversity (including stop words)
 lexical_df = df_lyrics %>%
   # Tokenizing the lyrics into individual words
-  unnest_tokens(word, cleaned_lyrics) %>%
+  unnest_tokens(word, cleaned_lyrics_stop) %>%
   # grouping by each song
   group_by(song_id) %>%
   summarise(
@@ -142,29 +188,51 @@ lexical_df = df_lyrics %>%
 df_lyrics = df_lyrics %>%
   left_join(lexical_df, by = c('song_id'))
 
-# Calculating average word length
+# Calculating average word length (including stop words)
 df_lyrics = df_lyrics %>%
-  mutate(avg_word_length = sapply(strsplit(cleaned_lyrics, "\\s+"), 
+  mutate(avg_word_length = sapply(strsplit(cleaned_lyrics_stop, "\\s+"), 
                                   function(words) mean(nchar(words))))
 
-# Calculating repetition ratio
+# Calculating repetition ratio (including stop words)
 df_lyrics = df_lyrics %>%
   mutate(
-    total_words = sapply(strsplit(cleaned_lyrics, "\\s+"), length),
-    unique_words = sapply(strsplit(cleaned_lyrics, "\\s+"), function(words) length(unique(words)))
+    total_words = sapply(strsplit(cleaned_lyrics_stop, "\\s+"), length),
+    unique_words = sapply(strsplit(cleaned_lyrics_stop, "\\s+"), function(words) length(unique(words)))
   ) %>%
-  mutate(repetition_ratio = 1 - (unique_words/total_words))%>%
-  # Selecting the required columns
+  mutate(repetition_ratio = 1 - (unique_words/total_words))
+
+# Taking care of some unusual cases where the lyrics are just "ssss", "", and "instrumental"
+# These lyrics justify nothing except for instrumental which depicts it has no lyrics so we handle these use cases
+# We reset the values to neutral since they can't be defined without the lyrics
+df_lyrics = df_lyrics %>%
+  mutate(
+    sentiment_polarity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, sentiment_polarity),
+    objectivity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0.5, objectivity),
+    word_count = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, word_count),
+    lexical_diversity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, lexical_diversity),
+    avg_word_length = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, avg_word_length),
+    repetition_ratio = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, repetition_ratio)
+  )
+
+# Selecting the required columns
+df_lyrics = df_lyrics %>%
   select(song_id, sentiment_polarity, objectivity, word_count, lexical_diversity, avg_word_length, repetition_ratio)
 
-# Final join to get the lyrical features combined with songs features we processed earlier
+# Final join to get the lyrical features combined with songs features we processed earlier and dropping NA's
 df_meta_songs = df_meta_songs %>%
-  left_join(df_lyrics, by = c('song_id'))
+  left_join(df_lyrics, by = c('song_id')) %>%
+  # Dropping the NA's where we can't calculate the lyrical features because the lyrical data is NULL for those songs
+  drop_na()
+
+# Just Saving this dataset for EDA of lyrical features
+df_meta_songs_eda = copy(df_meta_songs)
+
+print (paste0("Dataset Size After Feature Engineering :: ", nrow(df_meta_songs)))
 
 print(paste('--------------------------------', Sys.time(), 'FURTHER PROCESSING', '------'))
 # Removing the columns that won't be used for the training and testing
 df_meta_songs = df_meta_songs %>%
-  select(-c(song_id, song_name, billboard, artists, artist_id_vectors, album_id))
+  select(-c(song_id, song_name, billboard, artists, artist_id_vectors))
 
 # Label Encoding the songs_type and explicit columns
 df_meta_songs_encoded = df_meta_songs %>%
@@ -173,30 +241,9 @@ df_meta_songs_encoded = df_meta_songs %>%
     song_type = ifelse(song_type == "Solo", 1, ifelse(song_type == "Collaboration", 2, NA))  # Solo as 1, Collaboration as 2
   )
 
-# omitting the NA's
+# Finally omitting any NA's that are there left
 df_meta_songs_encoded = na.omit(df_meta_songs_encoded)
 print (paste0("Final Dataset Size :: ", nrow(df_meta_songs_encoded)))
-
-correlation_matrix = round(cor(df_meta_songs_encoded), 2)
-melted_correlation_matrix = melt(correlation_matrix) # Long Format
-
-ggplot(data = melted_correlation_matrix, aes(x = Var1, y = Var2, fill = value)) +
-  geom_tile(color = "white") +
-  geom_text(aes(label = sprintf("%.2f", value)), color = "gray0", size = 2) +
-  scale_fill_gradient2(
-    low = "steelblue", high = "darkred", mid = "white", midpoint = 0,
-    limit = c(-1, 1), space = "Lab", name = "Correlation"
-  ) +
-  labs(
-    title = "Correlation Heatmap",
-    x = "Features",
-    y = "Features"
-  ) +
-  theme_minimal() +  # Minimal theme for a clean look
-  theme(text = element_text(family = 'mono'),
-        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
-        axis.text.x = element_text(angle = 50, size = 10, face = 'bold', vjust = 1, hjust = 1),
-        axis.text.y = element_text(size = 10, face = 'bold'))
 
 print(paste('--------------------------------', Sys.time(), 'SPLITTING DATA INTO TRAIN AND TEST DATA', '-'))
 
@@ -224,5 +271,5 @@ df_train = df_train %>%
   select(-c(popularity))
 
 # Saving RData for decrease the data loading time
-tables_to_save <- c('df_meta_songs_encoded', 'X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test')
+tables_to_save <- c('X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test', 'df_meta_songs_eda')
 save(list = tables_to_save, file = paste0('RData/Processed_Music_Data.RData'))

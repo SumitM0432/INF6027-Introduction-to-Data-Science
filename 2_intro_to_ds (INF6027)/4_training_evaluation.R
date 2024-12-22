@@ -32,7 +32,7 @@ feature_importance_linear = data.frame(
   Importance = coefficients[-1]
 )
 
-linear_imp = ggplot(feature_importance, aes(x = reorder(Feature, Importance), y = Importance)) +
+linear_imp = ggplot(feature_importance_linear, aes(x = reorder(Feature, Importance), y = Importance)) +
   geom_bar(stat = "identity", fill = "lightseagreen") + # Using stat as identity to skip the aggregation since we already have values
   coord_flip() +
   labs(
@@ -82,8 +82,8 @@ rf_importance = randomForest::importance(rf_model)
 
 # Convert to a data frame
 feature_importance_rf = data.frame(
-  Feature = rownames(importance),
-  Importance = importance[, "IncNodePurity"]  # Mean Decrease Gini is a common metric
+  Feature = rownames(rf_importance),
+  Importance = rf_importance[, "IncNodePurity"]
 )
 
 # Plot feature importance
@@ -169,6 +169,6 @@ ggsave(paste0("Feature_Importance_xgb_reg.jpeg"), xgb_imp, path = paste0(getwd()
 
 print(paste('--------------------------------', Sys.time(), 'SAVING MODELS', '--------------'))
 
-saveRDS(linear_model, "Results/lm_model_est_lyrics.rds")
-saveRDS(rf_model, "Results/rf_model_est_lyrics.rds")
-saveRDS(rf_model, "Results/xgb_model_est_lyrics.rds")
+saveRDS(linear_model, "Trained_Models/lm_model_est_lyrics.rds")
+saveRDS(rf_model, "Trained_Models/rf_model_est_lyrics.rds")
+saveRDS(rf_model, "Trained_Models/xgb_model_est_lyrics.rds")
