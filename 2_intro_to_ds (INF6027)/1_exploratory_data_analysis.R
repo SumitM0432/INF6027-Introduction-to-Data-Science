@@ -301,8 +301,8 @@ ggplot(df_meta_songs_eda, aes(x = sentiment_polarity, fill = song_type)) +
   )
 
 # Correlation Heatmap for Lyrical Features and Popularity
-# Compute correlation matrix and visualize as heatmap
-cor_matrix <- cor(na.omit(df_meta_songs_eda[, c("popularity", "sentiment_polarity", "objectivity", 
+# Computing correlation matrix and visualize as heatmap
+cor_matrix = cor(na.omit(df_meta_songs_eda[, c("popularity", "sentiment_polarity", "objectivity", 
                                                 "word_count", "lexical_diversity", "avg_word_length", "repetition_ratio")]))
 
 ggplot(data = melt(cor_matrix), aes(Var1, Var2, fill = value)) +
@@ -328,10 +328,9 @@ ggplot(df_meta_songs_eda, aes(x = repetition_ratio, y = popularity)) +
     title = "Popularity vs. Repetition Ratio",
     x = "Repetition Ratio",
     y = "Popularity"
-  ) +
-  theme_minimal()
+  )
 
-# Change of average lexical diversity over the years
+# Change of average lexical diversity over the years (it's decresing)
 df_meta_songs_eda %>%
   group_by(year) %>%
   summarize(avg_lex = mean(lexical_diversity, na.rm = TRUE)) %>%
@@ -379,82 +378,75 @@ df_meta_songs_eda %>%
     y = "Word Length"
   )
 
-
-
 #### ACOUSTIC FEATURES ---------------------------------------------------------
-
 # Distribution of Acoustic Features
-# Plotting density for key acoustic features to observe their distribution
-features <- c("acousticness", "danceability", "energy", "valence")
+# Visualizing the distribution of key acoustic features to understand their spread
+features = c("acousticness", "danceability", "energy", "valence")
 
-df_acoustic_features_long <- df_acoustic_features %>%
+# Converting the dataset into a long format for easier faceting
+df_acoustic_features_long = df_acoustic_features %>%
   select(all_of(features)) %>%
   pivot_longer(cols = everything(), names_to = "feature", values_to = "value")
 
 # Density plot for feature distributions
 ggplot(df_acoustic_features_long, aes(x = value, fill = feature)) +
-  geom_density(alpha = 0.6) +
-  facet_wrap(~feature, scales = "free") +  # Separate plots for each feature
+  geom_density(alpha = 0.6) +  # Density plots with transparency
+  facet_wrap(~feature, scales = "free") +  # Create separate panels for each feature
   labs(
     title = "Distribution of Key Acoustic Features", 
     x = "Feature Value", 
     y = "Density"
-  ) +
-  theme_minimal()
+  )
 
 # Tempo vs. Energy Scatter Plot
-# Observing the relationship between tempo and energy
-# Adding a trend line to identify patterns
+# Analyzing the relationship between tempo and energy
 ggplot(df_acoustic_features, aes(x = tempo, y = energy)) +
-  geom_point(alpha = 0.5, color = "blue") +
-  geom_smooth(method = "lm", color = "red", linetype = "dashed") +
+  geom_point(alpha = 0.5, color = "blue") +  # Scatter plot
+  geom_smooth(method = "lm", color = "red", linetype = "dashed") +  # Linear trend line
   labs(
     title = "Relationship Between Tempo and Energy",
     x = "Tempo (BPM)",
     y = "Energy Level"
-  ) +
-  theme_minimal()
+  )
 
 # Danceability by Time Signature
-# Using boxplot to compare danceability scores across time signatures
+# Comparing danceability across different time signatures using a boxplot
 ggplot(df_acoustic_features, aes(x = factor(time_signature), y = danceability, fill = factor(time_signature))) +
-  geom_boxplot(alpha = 0.7) +
+  geom_boxplot(alpha = 0.7) +  # Boxplot with transparency
   labs(
     title = "Danceability by Time Signature",
     x = "Time Signature",
     y = "Danceability"
   ) +
-  theme_minimal() +
-  theme(legend.position = "none")
+  theme(legend.position = "none")  # Hide legend as time signature is already on the x-axis
 
 # Heatmap for Acousticness and Energy by Key and Mode
-# Creating a heatmap to show average acousticness and energy grouped by key and mode
-heatmap_data <- df_acoustic_features %>%
+# Creating grouped data for heatmap visualization
+heatmap_data = df_acoustic_features %>%
   group_by(key, mode) %>%
   summarise(
-    avg_acousticness = mean(acousticness, na.rm = TRUE),
-    avg_energy = mean(energy, na.rm = TRUE)
+    avg_acousticness = mean(acousticness, na.rm = TRUE),  # Average acousticness by key and mode
+    avg_energy = mean(energy, na.rm = TRUE)  # Average energy by key and mode
   )
 
-# Heatmap for acousticness
+# Heatmap for Acousticness
 ggplot(heatmap_data, aes(x = factor(key), y = factor(mode), fill = avg_acousticness)) +
-  geom_tile(color = "white") +
+  geom_tile(color = "white") +  # Heatmap tiles
   scale_fill_gradient2(
     low = "blue", high = "red", mid = "white", midpoint = 0.5, name = "Acousticness"
-  ) +
+  ) +  # Gradient color scale
   labs(
     title = "Average Acousticness by Key and Mode",
     x = "Key",
     y = "Mode"
-  ) +
-  theme_minimal()
+  )
 
-# Heatmap for energy
+# Heatmap for Energy
 ggplot(heatmap_data, aes(x = factor(key), y = factor(mode), fill = avg_energy)) +
-  geom_tile(color = "white") +
+  geom_tile(color = "white") +  # Heatmap tiles
   scale_fill_gradient2(
     low = "blue", high = "red", mid = "white", midpoint = 0.5, name = "Energy"
-  ) +
+  ) +  # Gradient color scale
   labs(
     title = "Average Energy by Key and Mode",
     x = "Key",
@@ -464,7 +456,7 @@ ggplot(heatmap_data, aes(x = factor(key), y = factor(mode), fill = avg_energy)) 
 
 # Loudness vs. Liveness for Popular Songs
 # Highlighting popular songs based on energy and danceability
-df_acoustic_features <- df_acoustic_features %>%
+df_acoustic_features = df_acoustic_features %>%
   mutate(is_popular = ifelse(energy > 0.7 & danceability > 0.7, "Popular", "Not Popular"))
 
 ggplot(df_acoustic_features, aes(x = loudness, y = liveness, color = is_popular)) +
@@ -478,23 +470,29 @@ ggplot(df_acoustic_features, aes(x = loudness, y = liveness, color = is_popular)
   theme_minimal()
 
 # FINAL CORRELATION HEATMAP
+# Calculating the correlation matrix for encoded features and round to two decimals
 correlation_matrix = round(cor(df_meta_songs_encoded), 2)
-melted_correlation_matrix = melt(correlation_matrix) # Long Format
 
+# Melting the correlation matrix into a long format
+melted_correlation_matrix = melt(correlation_matrix)
+
+# Plotting the heatmap
 ggplot(data = melted_correlation_matrix, aes(x = Var1, y = Var2, fill = value)) +
-  geom_tile(color = "white") +
-  geom_text(aes(label = sprintf("%.2f", value)), color = "gray0", size = 2) +
+  geom_tile(color = "white") +  # Create heatmap tiles with a white border
+  geom_text(aes(label = sprintf("%.2f", value)), color = "gray0", size = 2) +  # Add correlation values as annotations
   scale_fill_gradient2(
-    low = "steelblue", high = "darkred", mid = "white", midpoint = 0,
-    limit = c(-1, 1), space = "Lab", name = "Correlation"
+    low = "steelblue", high = "darkred", mid = "white", midpoint = 0,  # Gradient colors
+    limit = c(-1, 1), space = "Lab", name = "Correlation"  # Scale limits and label
   ) +
   labs(
-    title = "Correlation Heatmap",
-    x = "Features",
-    y = "Features"
+    title = "Correlation Heatmap",  # Title of the heatmap
+    x = "Features",  # X-axis label
+    y = "Features"   # Y-axis label
   ) +
-  theme_minimal() +  # Minimal theme for a clean look
-  theme(text = element_text(family = 'mono'),
-        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
-        axis.text.x = element_text(angle = 50, size = 10, face = 'bold', vjust = 1, hjust = 1),
-        axis.text.y = element_text(size = 10, face = 'bold'))
+  theme_minimal() +  # Apply a minimal theme for a clean appearance
+  theme(
+    text = element_text(family = 'mono'),  # Set the font style to mono
+    plot.title = element_text(hjust = 0.5, size = 15, face = 'bold'),  # Center-align and style the title
+    axis.text.x = element_text(angle = 50, size = 10, face = 'bold', vjust = 1, hjust = 1),  # Rotate X-axis labels for better visibility
+    axis.text.y = element_text(size = 10, face = 'bold')  # Style the Y-axis labels
+  )
