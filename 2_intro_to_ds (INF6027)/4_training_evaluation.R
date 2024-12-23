@@ -54,8 +54,33 @@ ggsave(paste0("Feature_Importance_linear_reg.jpeg"), linear_imp, path = paste0(g
 
 print(paste('--------------------------------', Sys.time(), 'RANDOM FOREST REGRESSION', '---'))
 
+# Parameter grid to test and tune for random forest
+rf_parameter_grid = expand.grid(
+  mtry = c(2, 4, 6),        # Number of predictors to consider at each split
+  splitrule = "variance",   # Default for regression
+  min.node.size = c(1, 5, 10)  # Minimum size of terminal nodes
+)
+
+# Doing 5 Folds cross-validation control
+rf_train_control = trainControl(
+  method = "cv",            # Cross-validation
+  number = 5,               # Number of folds
+  verboseIter = TRUE,       # Print progress
+  allowParallel = TRUE      # Allow parallel processing
+)
+
 # Training the random forest regression model
-rf_model = random_forest_reg(X_train = X_train, y_train = y_train_scaled, n_tree = 1500)
+rf_model = rf_reg_tuning(
+  X_train = X_train,
+  y_train_scaled = y_train_scaled,
+  parameter_grid = rf_parameter_grid,
+  train_control = rf_train_control
+)
+
+# Extracting the best tuned hyperparameters
+rf_model_tuned_parameters = rf_model$bestTune
+print ("Best Parameters for Random Forest Regressor ::")
+rf_model_tuned_parameters
 
 # Model Definition Summary
 print(rf_model)
@@ -77,17 +102,16 @@ pred_vs_actual_plot(results_data = results_data, model_name = 'rf_reg')
 residual_plot(results_data = results_data, model_name = 'rf_reg')
 
 # PLOTTING FEATURE IMPORTANCE
-# Extract feature importance
-rf_importance = randomForest::importance(rf_model)
+# Extract feature importance from the ranger model within the caret object
+rf_importance = varImp(rf_model, scale = FALSE)
 
-# Convert to a data frame
-feature_importance_rf = data.frame(
-  Feature = rownames(rf_importance),
-  Importance = rf_importance[, "IncNodePurity"]
-)
+# Convert to a data frame and some minor adjustments
+feature_importance_rf = as.data.frame(rf_importance$importance) %>%
+  mutate(features = rownames(rf_importance$importance)) %>%
+  rename('importance' = 'Overall')
 
 # Plot feature importance
-rf_imp = ggplot(feature_importance_rf, aes(x = reorder(Feature, Importance), y = Importance)) +
+rf_imp = ggplot(feature_importance_rf, aes(x = reorder(features, importance), y = importance)) +
   geom_bar(stat = "identity", fill = "lightseagreen") +
   coord_flip() +
   labs(
@@ -109,8 +133,8 @@ ggsave(paste0("Feature_Importance_rf_reg.jpeg"), rf_imp, path = paste0(getwd(), 
 
 print(paste('--------------------------------', Sys.time(), 'XGB REGRESSION', '-------------'))
 
-# Parameter grid to test and tune
-parameter_grid = expand.grid(
+# Parameter grid to test and tune for xgboost
+xgb_parameter_grid = expand.grid(
   nrounds = c(100, 150, 200),       # Fixed rounds for simplicity
   max_depth = c(4, 5, 6),       # Optimal value based on prior knowledge or exploration
   eta = c(0.05, 0.1, 0.15),           # Learning rate
@@ -121,7 +145,7 @@ parameter_grid = expand.grid(
 )
 
 # Doing 5 Folds cross-validation control
-train_control = trainControl(
+xgb_train_control = trainControl(
   method = "cv",          # Cross-validation
   number = 5,             # 5 folds
   verboseIter = TRUE,     # Show progress
@@ -130,14 +154,20 @@ train_control = trainControl(
 
 # Training the XGB regression model and tuning it
 # This will test all the hyperparameter given and extract the best model that is trained on this cross validation set
-xgb_result = xgb_tuning_simple(
+xgb_result = xgb_reg_tuning(
   X_train = X_train,
   y_train_scaled = y_train_scaled,
-  parameter_grid = parameter_grid,
-  train_control = train_control
+  parameter_grid = xgb_parameter_grid,
+  train_control = xgb_train_control
 )
+
+# Extracting the best tuned hyperparameters
+xgb_model_tuned_parameters = xgb_result$bestTune
+print ("Best Parameters for XGBoost Regressor ::")
+xgb_model_tuned_parameters
+
 # Extract the best model
-xgb_model = xgb_result$focused$bestTune
+xgb_model = xgb_result$finalModel
 
 # Model Definition Summary
 print(xgb_model)

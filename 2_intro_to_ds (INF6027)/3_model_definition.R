@@ -8,17 +8,22 @@ linear_reg = function (formula, data) {
 
 # RANDOM FOREST MODEL ----------------------------------------------------------
 
-# Random Forest Regressor Model Definition
-random_forest_reg = function(X_train, y_train, n_tree) {
-  rf_model = randomForest(
-                    x = X_train,
-                    y = y_train,
-                    ntree = n_tree,
-                    mtry = sqrt(ncol(X_train)) 
-                  )
+# Function to train Random Forest with hyperparameter tuning
+rf_reg_tuning = function(X_train, y_train_scaled, parameter_grid, train_control) {
   
-  return (rf_model)
+  rf_model = train(
+    x = as.matrix(X_train),        # Ensuring the input is a matrix
+    y = y_train_scaled,            # Scaled target variable
+    method = "ranger",             
+    trControl = train_control,     # Cross-validation
+    tuneGrid = parameter_grid,     # Hyperparameters already defined to test
+    importance = 'impurity'        # Enabling feature importance
+  )
+  
+  # Returning the models trained
+  return(rf_model)
 }
+
 
 # XGBOOST MODEL ----------------------------------------------------------------
 
@@ -27,13 +32,13 @@ xgb_reg_tuning = function(X_train, y_train_scaled, parameter_grid, train_control
   
   # Perform parameter tuning
   xgb_tuned = train(
-    x = as.matrix(X_train),
-    y = y_train_scaled,
+    x = as.matrix(X_train),        # Ensuring the input is a matrix
+    y = y_train_scaled,            # Scaled target variable
     method = "xgbTree",
-    trControl = train_control,
-    tuneGrid = parameter_grid
+    trControl = train_control,     # Cross-validation
+    tuneGrid = parameter_grid      # Hyperparameters already defined to test
   )
   
-  # Return the models trained
+  # Returning the models trained
   return (xgb_tuned)
 }
