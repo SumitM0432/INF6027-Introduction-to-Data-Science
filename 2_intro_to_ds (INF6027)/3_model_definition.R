@@ -8,29 +8,37 @@ linear_reg = function (formula, data) {
 
 # RANDOM FOREST MODEL ----------------------------------------------------------
 
-# Random Forest Regressor Model Definition
-random_forest_reg = function(X_train, y_train, n_tree) {
-  rf_model = randomForest(
-                    x = X_train,
-                    y = y_train,
-                    ntree = n_tree,
-                    mtry = sqrt(ncol(X_train)) 
-                  )
+# Function to train Random Forest with hyperparameter tuning
+rf_reg_tuning = function(X_train, y_train_scaled, parameter_grid, train_control) {
   
-  return (rf_model)
+  rf_model = train(
+    x = as.matrix(X_train),        # Ensuring the input is a matrix
+    y = y_train_scaled,            # Scaled target variable
+    method = "ranger",             
+    trControl = train_control,     # Cross-validation
+    tuneGrid = parameter_grid,     # Hyperparameters already defined to test
+    importance = 'impurity'        # Enabling feature importance
+  )
+  
+  # Returning the models trained
+  return(rf_model)
 }
+
 
 # XGBOOST MODEL ----------------------------------------------------------------
 
-# XGB Regressor Model Definition
-xgb_reg = function(params, X_train, y_train, nrounds, verbose = 0) {
-  xgb_model = xgboost(
-                data = as.matrix(X_train),
-                label = as.matrix(y_train),
-                params = params,
-                nrounds = nrounds,                   
-                verbose = verbose                     
-              )
+# XGB Regressor Model Definition with hyperparameter tuning
+xgb_reg_tuning = function(X_train, y_train_scaled, parameter_grid, train_control) {
   
-  return (xgb_model)
+  # Perform parameter tuning
+  xgb_tuned = train(
+    x = as.matrix(X_train),        # Ensuring the input is a matrix
+    y = y_train_scaled,            # Scaled target variable
+    method = "xgbTree",
+    trControl = train_control,     # Cross-validation
+    tuneGrid = parameter_grid      # Hyperparameters already defined to test
+  )
+  
+  # Returning the models trained
+  return (xgb_tuned)
 }

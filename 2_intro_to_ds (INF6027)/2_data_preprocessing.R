@@ -42,7 +42,8 @@ df_meta_songs = df_meta_songs %>%
     year_end_score_song = ifelse(is.na(year_end_score_song), as.integer(avg_yes), year_end_score_song),
     # Imputing the year with the median of the years
     year = ifelse(is.na(year), median(year, na.rm = TRUE), year)
-  ) 
+  )  %>%
+  select(-c(avg_yes))
 
 # Adding the acoustic features to the data
 df_meta_songs = df_meta_songs %>%
@@ -201,17 +202,23 @@ df_lyrics = df_lyrics %>%
   ) %>%
   mutate(repetition_ratio = 1 - (unique_words/total_words))
 
-# Taking care of some unusual cases where the lyrics are just "ssss", "", and "instrumental"
+# Taking care of some unusual cases where the lyrics are just "ssss", "", "instrumental", and "instrumental track
+df_lyrics %>%
+  mutate(num_char = nchar(lyrics)) %>%
+  filter(num_char <= 30) %>%
+  select(lyrics, cleaned_lyrics) %>%
+  distinct()
+
 # These lyrics justify nothing except for instrumental which depicts it has no lyrics so we handle these use cases
 # We reset the values to neutral since they can't be defined without the lyrics
 df_lyrics = df_lyrics %>%
   mutate(
-    sentiment_polarity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, sentiment_polarity),
-    objectivity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0.5, objectivity),
-    word_count = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, word_count),
-    lexical_diversity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, lexical_diversity),
-    avg_word_length = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, avg_word_length),
-    repetition_ratio = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental"), 0, repetition_ratio)
+    sentiment_polarity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, sentiment_polarity),
+    objectivity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0.5, objectivity),
+    word_count = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, word_count),
+    lexical_diversity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, lexical_diversity),
+    avg_word_length = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, avg_word_length),
+    repetition_ratio = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, repetition_ratio)
   )
 
 # Selecting the required columns
