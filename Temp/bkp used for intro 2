@@ -56,7 +56,7 @@ We added 6 features after aggregation:
     
     The lyrical features are not available in the default data so we engineer them since we have a research question for that. This process is given in the next section “Feature Engineering”.
     
-    After the all the data preprocessing, cleaning and features engineering is done, the data is split into 70:30 ratio which adhere to the standard data science practice since this ensure that sufficient data is there for model training meanwhile enough is present for testing the accuracy of the models.
+    After the all the data preprocessing, cleaning and features engineering is done, the data is split into 70:30 ratio which adhere to the standard data science practice since this ensure that sufficient data is there for model training meanwhile enough is present for testing the accuracy of the models. [? add scaling of song_popularity]
     
     2.1.4 Lyrical Feature Engineering
     
@@ -95,10 +95,74 @@ We added 6 features after aggregation:
     
     [? Final table of how dataset looked] 
     
-    ref
+    2.1.5 Model Training and Hyperparameter Tuning
+    
+    After the preprocessing is done, the comes the training and optimization of the predictive models for predicting the song popularity which is a regression problem. The models that are used in this study are Linear Regression (baseline), Random Forest and XGBoost. Each model was trained on a dataset containing song features, artist attributes, and engineered lyrical features. These models are tested before and after the addition of the lyrical features to see how it affects the predictive power of the model, furthermore, the hyperparameter tuning is also done for the Random Forest and XGBoost Regressors using gridSearch method with cross validation. A 5-fold cross-validation technique was used to evaluate model performance across multiple subsets of the training data, reducing the risk of overfitting and Grid search was chosen as the hyperparameter tuning approach to systematically test the combinations of hyperparameters, this also ensures that the best parameters of the models are saved. This process of training with and without lyrical feature followed by hyperparameter tuning improve the accuracy and interpretability of the models which is inconjunction with both of the research questions. Afterwards the models with the best parameters are finalized and test using the testing data (30%) and then evaluated using the evaluation metrics and other plots. The details of the models are given below:
+    
+    1. Linear Regression: Linear Regression serves as the baseline model to evaluate the effectiveness of more complex machine learning algorithms. It’s chosen as a baseline model to establish a foundation benchmark since it’s a very simple modelling algorithm.
+    It is implemented using the ‘lm’ function in R, furthermore, the model is trained without tuning since linear regression lacks hyperparameter options.
+    2. Random Forest: Random Forest is a bit more advanced machine learning algorithm and chose for its robustness in handling high-dimensional data and its ability to identify feature importance.
+        
+        It is implemented using a package called caret with ranger implementation. Then the grid search strategy is with 5 fold cross validation was used to optimize 3 parameters called mtry which is number of features for splits, splitrule that is criteria for node splitting (variance used generally for regression) and min.node.size which is minimum size of terminal nodes.
+        [? proper table]
+        
+        ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/530dccc8-9dcb-4632-9b65-c4fc4f5e840c/64594a8b-8255-447e-99aa-06f1eeaff996/image.png)
+        
+    3. XGBoost: XGBoost is also an advanced machine learning algorithm which is chosen because of it’s efficiency in handling structured data and imbalanced datasets and also it has it’s own functions to calculate the features importance.
+        
+        It is also implemented using a package called caret with ranger implementation. Then the grid search strategy is with 5 fold cross validation used to optimize 7 parameters called nrounds that is number of boosting round, max_depth that is maximum tree depth, eta (learning rate), gamma (loss for plit), colsample_bytree (fraction of features for tree splits), min_child_weight (Minimum sum of weights for child nodes) and sumsample (Fraction of samples for each boosting round).
+        
+        After tuning all the parameters, the best hyperparaters came out to be. [? proper table]
+        
+    
+    ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/530dccc8-9dcb-4632-9b65-c4fc4f5e840c/8e436302-ff96-4d95-959e-b16c4b147133/image.png)
+    
+    2.1.6 Evaluation Metrics
+    
+    Finally, to effectively evaluate the performance of the predictive models, we are using three metrics that are widely accepted for regression problems that are given below:
+    
+    1. Root Mean Squared Error (RMSE):
+        - RMSE measure the average magnitude of the prediction error by emphasizing large errors. This is particularly useful for identifying models that predict the high and low values of the popularity. It ensure the model’s robustness for extreme popularity scores.
+        - Its’s used in a similar study "Predicting Song Popularity Using Machine Learning Algorithms" by Kakkad et al., where regression models were evaluated for song popularity prediction using this metric [3].
+    2. Mean Absolute Error (MAE):
+        - MAE provides an average of absolute prediction errors without amplifying the effect of large residuals, offering a balanced understanding of the model's performance. It complements RMSE by focusing on all errors equally, regardless of magnitude.
+        - The metric has been effectively employed in studies like "Beyond Beats: A Recipe to Song Popularity? A Machine Learning Approach" by Jung and Mayer, emphasizing its relevance in analyzing predictive accuracy [4].
+    3. R-Squared (R²):
+        - R² quantifies the proportion of variance in the target variable (popularity) that the model explains. It is particularly beneficial for interpreting the effectiveness of feature selection and engineering as highlighted in "Predicting Song Popularity" by Stanford researchers, R² is a critical metric for assessing model performance in the domain of song popularity prediction [5].
+    
+    To further assess model performance and add a visual component to it, A residual analysis is done and the distribution is plotted. The residual here is just the difference between the actual and predicted values. This is useful to understand the error centering, where a good model will have the residuals centered around zero indicating unbiased prediction across the popularity scores and also the error spread, this gives an idea about the variability in the prediction since the narrower spread indicates higher accuracy and consistency.
+    
+    These density plot of residuals were created for each model to compare performance in conjunction with the RMSE, MAE and R-Squared metrics.
+    
+    ## Answering the Research Question
+    
+    1. What combination of song, artist, and acoustic features contributes most to the accurate prediction of song popularity for optimized machine learning models?
+        
+        To address this question, song, artist, and acoustic features are combined and preprocessed into a unified dataset. Features that can be relevant are selected, including energy, danceability, and artist genre. Afterward, three machine learning models were trained on the 70-30 train-test split with optimized hyperparameters using grid search with cross-validation: Linear Regression, Random Forest, and XGBoost. Feature importance metrics, such as the IncNodePurity and gain, were examined in order to pinpoint which features best explain the popularity of a song. This structured approach would ensure that the research ascertains essential predictors while assessing the effectiveness of refined models.
+        
+        By examining feature importance values and residual plots, the analysis uncovers relationships between feature combinations and prediction accuracy. The results quantitatively demonstrate which attributes significantly influence popularity predictions and how various models interpret these features, answering the research question while aligning with the study’s broader aim of uncovering key drivers of song popularity.
+        
+    
+    1. How does the inclusion of lyrical features, such as sentiment polarity and other linguistic attributes, enhance the predictive accuracy and interpretability of machine learning models after optimization?
+    
+    This question is addressed by adding lyrical features of the songs, such as sentiment polarity, objectivity, and lexical diversity to the dataset. Both lyrical and nonlyrical datasets are used for the training of models to identify the effect of lyrical features on the predictive performance based on metrics such as RMSE, MAE, and R². Residual plots and feature importance metrics highlight how these features impact model predictions and interpretability. By comparing results, the study evaluates whether lyrical features improve prediction accuracy and provide deeper insights into the creative and emotional aspects of songs.
+    
+    Lyrical features offer a further dimension of understanding of the drivers of popularity. Indeed, findings indicate that these increase model performance and interpretability, effectively answering the research question, while aligning with the objective of improving the accuracy through integrations of the feature.
+    
+    **ref (bro change the urls and remove chat gpt from them)**
     
     [1] https://marianaossilva.github.io/DSW2019/index.html
     
     [2] Bridging the Data Gap: How to Deal with Missing Data in Observational Studies
     
     (https://www.hubresearch.ca/bridging-the-data-gap-how-to-deal-with-missing-data-in-observational-studies/?utm_source=chatgpt.com)
+    
+    [3] **"Predicting Song Popularity Using Machine Learning Algorithms"** by Yashraj Kakkad et al. (https://github.com/yashrajkakkad/song-popularity-prediction?utm_source=chatgpt.com)
+    
+    [4] **"Beyond Beats: A Recipe to Song Popularity? A Machine Learning Approach"** by Niklas Sebastian Jung and Florian Mayer. (https://arxiv.org/abs/2403.12079?utm_source=chatgpt.com)
+    
+    [5] **"Predicting Song Popularity"** by Stanford University researchers. (https://cs229.stanford.edu/proj2015/140_report.pdf?utm_source=chatgpt.com)
+    
+    [6] https://www.r-bloggers.com/2024/01/xgboost-tuning-the-hyperparameters-my-secret-2-step-process-in-r/
+    
+    [7]

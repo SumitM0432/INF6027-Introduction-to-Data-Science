@@ -1,13 +1,3 @@
-print_description = function(df) {
-  print (paste0("No. of Rows :: ", nrow(df)))
-  print (paste0("No. of Columns :: ", ncol(df)))
-  
-  # Column Names
-  ls = colnames(df)
-  
-  return (ls)
-}
-
 extract_artist = function(val) {
   # Matches a literal expression saying extract anything between ' - ': where .* means match any sequence and ? means make it non greedy
   id = str_extract_all(val, "'(.*?)':")[[1]]
@@ -19,28 +9,6 @@ extract_artist = function(val) {
   id_vector = as.vector(id)
   
   return (id_vector)
-}
-
-check_coverage = function(df1, df2, on_col) {
-  
-  # Selecting the only the ids for data frame 1 (on which we are gonna do the check)
-  df1 = df1 %>%
-    select(all_of(on_col)) %>%
-    distinct()
-  
-  # Temp flag for the data frame 2 with whom we are gonna check
-  df2 = df2 %>%
-    mutate(temp_flag = 1) %>%
-    select(all_of(c(on_col, 'temp_flag')))
-  
-  # ids not present count
-  not_present = left_join(df1, df2, by = c(on_col)) %>%
-    filter(is.na(temp_flag)) %>%
-    select(all_of(on_col))
-  
-  print (paste0("ids not present in the second tables :: count :: ", nrow(not_present)))
-  return (not_present)
-  
 }
 
 get_artist_features = function (artist_ids_list, df_meta_artists = df_meta_artists) {
@@ -113,10 +81,8 @@ pred_vs_actual_plot = function(results_data, model_name) {
   plot(pred_v_act)
   
   # Saving the plot in a folder
-  ggsave(paste0("Predicted_v_Actual_" , model_name, ".jpeg"), pred_v_act, path = paste0(getwd(), "/Plots")) 
+  ggsave(paste0("Predicted_v_Actual_" , model_name, ".jpeg"), pred_v_act, path = paste0(getwd(), "/Plots/Results")) 
 }
-
-# https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf -- used for colors
 
 residual_plot = function(results_data, model_name) {
   
@@ -143,5 +109,5 @@ residual_plot = function(results_data, model_name) {
   plot(res_plot)
   
   # Saving the plot in a folder
-  ggsave(paste0("Residual_Plot_" , model_name, ".jpeg"), res_plot, path = paste0(getwd(), "/Plots")) 
+  ggsave(paste0("Residual_Plot_" , model_name, ".jpeg"), res_plot, path = paste0(getwd(), "/Plots/Results")) 
 }
