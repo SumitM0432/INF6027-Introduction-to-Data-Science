@@ -1,197 +1,105 @@
-## Motivation and Goal of the Investigation
+Introduction to Data Science
 
-Predicting the song's popularity is a fascinating challenge that bridges the domain of data science and creative industries.  In the modern music industry, several platforms like Spotify and Apple Music rely on data-driven decisions to solve different use cases, such as personalized recommendations, predicting the success of an unreleased song, and more. In this context understanding what contributes to the success of a song is crucial since it can help streaming platforms deliver a better user experience but also empowers the artists and producers to make informed decisions and help them which song to buy copyright for and release on their platform which can lead to certain profit margins for instance, In 2022, Spotify reported over 456 million users globally, emphasizing the importance of accurate music recommendations and popularity predictions for improving user retention and satisfaction.
-
+INTRODUCTION AND AIM
+Motivation and Goal of the Investigation
+Predicting the song's popularity is a fascinating challenge that bridges the domain of data science and creative industries.  In the modern music industry, several platforms like Spotify and Apple Music rely on data-driven decisions to solve different use cases, such as personalized recommendations, predicting the success of an unreleased song, and more. In this context understanding what contributes to the success of a song is crucial since it can help streaming platforms deliver a better user experience but also empowers the artists and producers to make informed decisions and help them which song to buy copyright for and release on their platform which can lead to certain profit margins for instance, In 2022, Spotify reported over 456 million users globally, emphasizing the importance of accurate music recommendations and popularity predictions for improving user retention and satisfaction.
 The goal of the research is to predict the popularity of the songs available in the MusicOSet Dataset which is a multimodal dataset containing diverse features such as song and artist characteristics and hence using these features to train different machine learning algorithms to compare the algorithms and the dataset has lyrical dataset allowing the extraction of advanced features like sentiment polarity, and subjectivity. This allows for an analysis of how lyrical attributes impact the predictive models, providing a comprehensive understanding of the factors influencing song popularity.
-
-## Literature Review
-
-The prediction of song popularity has been a compelling area of research due to its applications in music recommendation systems, marketing strategies, and understanding listener preferences. Several studies have utilized machine learning techniques to address this challenge. For example, the study *"Predicting Song Popularity Using Spotify Web API"* analyzed over 160,000 songs and employed models like Random Forest and XGBoost to predict popularity using features such as tempo, loudness, and genre, achieving high predictive accuracy [1]. Similarly, a Stanford University project titled *"Song Popularity Prediction"* applied regression models, neural networks, and support vector machines, emphasizing the importance of metadata and audio features in predicting song success [2]. These studies highlight the role of multimodal data in achieving accurate predictions, aligning with this research's focus on integrating diverse song, and artist characteristics.
-
-Beyond structural and audio features, the role of lyrical content has gained attention for its impact on a song’s success. The paper *"Quantitative Sentiment Analysis of Lyrics in Popular Music"* analyzed Billboard Hot 100 songs over decades, revealing correlations between emotional content and popularity trends [3]. Another study, *"Hit Song Prediction: Feature Engineering with Metadata and Lyrics,"* demonstrated the influence of sentiment polarity and repetition metrics on model performance, with Random Forest and Logistic Regression models outperforming others [4]. Furthermore, the paper *"Beyond Beats: A Recipe to Song Popularity?"* explored multimodal approaches combining lyrical, audio, and artist data, showing that integrating diverse features significantly enhances prediction accuracy [5]. This body of work supports the approach in this study, which incorporates lyrical features like sentiment polarity alongside traditional song attributes to analyze their collective impact on song popularity.
-
-## Research Aim
-
+Literature Review
+The prediction of song popularity has been a compelling area of research due to its applications in music recommendation systems, marketing strategies, and understanding listener preferences. Several studies have utilized machine learning techniques to address this challenge. For example, the study "Predicting Song Popularity Using Spotify Web API" analyzed over 160,000 songs and employed models like Random Forest and XGBoost to predict popularity using features such as tempo, loudness, and genre, achieving high predictive accuracy [1]. Similarly, a Stanford University project titled "Song Popularity Prediction" applied regression models, neural networks, and support vector machines, emphasizing the importance of metadata and audio features in predicting song success [2]. These studies highlight the role of multimodal data in achieving accurate predictions, aligning with this research's focus on integrating diverse song, and artist characteristics.
+Beyond structural and audio features, the role of lyrical content has gained attention for its impact on a song’s success. The paper "Quantitative Sentiment Analysis of Lyrics in Popular Music" analyzed Billboard Hot 100 songs over decades, revealing correlations between emotional content and popularity trends [3]. Another study, "Hit Song Prediction: Feature Engineering with Metadata and Lyrics," demonstrated the influence of sentiment polarity and repetition metrics on model performance, with Random Forest and Logistic Regression models outperforming others [4]. Furthermore, the paper "Beyond Beats: A Recipe to Song Popularity?" explored multimodal approaches combining lyrical, audio, and artist data, showing that integrating diverse features significantly enhances prediction accuracy [5]. This body of work supports the approach in this study, which incorporates lyrical features like sentiment polarity alongside traditional song attributes to analyze their collective impact on song popularity.
+Research Aim
 The aim of this study is to develop and evaluate predictive models for forecasting song popularity using multimodal data, including song features, artist attributes, and acoustic features. Initially, a baseline model will be trained using these core features to establish foundational insights. Subsequently, two additional machine learning models will be trained and optimized to enable a comparative analysis. Feature engineering will also be performed to extract lyrical features, such as sentiment polarity and linguistic attributes, which will be incorporated to evaluate their impact on model performance. This study also involves optimizing multiple machine learning models to identify which features and modeling approaches provide the most accurate and interpretable predictions of song popularity. By analyzing the influence of various features and evaluating optimized model performances, the research seeks to identify the most significant factors contributing to song popularity while highlighting the strengths and limitations of each approach.
+Research Questions
+1.  What combination of song, artist, and acoustic features contributes most to the accurate prediction of song popularity for optimized machine learning models?
+2.  How does the inclusion of lyrical features, such as sentiment polarity and other linguistic attributes, enhance the predictive accuracy and interpretability of machine learning models after optimization?
 
-## Research Questions
 
-1. What combination of song, artist, and acoustic features contributes most to the accurate prediction of song popularity for optimized machine learning models?
-2. How does the inclusion of lyrical features, such as sentiment polarity and other linguistic attributes, enhance the predictive accuracy and interpretability of machine learning models after optimization?
 
-## References for Literature review
-
-1. Yashraj Kakkad, *"Predicting Song Popularity Using Spotify Web API,"* [GitHub Repository](https://github.com/yashrajkakkad/song-popularity-prediction).
-2. Stanford University, *"Song Popularity Prediction,"* [CS229 Project](https://cs229.stanford.edu/proj2015/140_report.pdf).
-3. Alberto Acerbi, *"Quantitative Sentiment Analysis of Lyrics in Popular Music,"* [UC Press](https://online.ucpress.edu/jpms/article/30/4/161/106385/Quantitative-Sentiment-Analysis-of-Lyrics-in).
-4. Paper, *"Hit Song Prediction: Feature Engineering with Metadata and Lyrics,"* [arXiv](https://arxiv.org/abs/2301.13507).
-5. Paper, *"Beyond Beats: A Recipe to Song Popularity?"* [arXiv](https://arxiv.org/pdf/2403.12079).
-
-## Illustration of Methodology
-
-2.1.1 Data Source and Gathering
-
+METHODOLOGY
+Illustration of Methodology
+Data Source and Gathering
 The data that has been used is called “MusicOSet music dataset” [1]. This dataset have different musical elements consisting of Music data, Albums Data and Artist Data which also include the acoustic and lyrical data for the music which makes it perfect for music data mining. This also have metadata for every aspect of the element which makes it quite useful for features engineering.
+The data is available as CSV and SQL script that generates the data. In this project, the SQL Script is used which ran on MySQL Server to create the data on the database called ‘MusicOSet’ which is then used in the R scripts to ingest directly into the R environment, so the further processing and mining can be done. Once Ingested, the data was converted to data table for high performance manipulation and for this we have use the library called data.table and then saved as RData, ensuring that the coming scripts can just use the RData and don’t have to load the data again and again which could be time taking.
+For this SQL database ingestion, RMySQL library is used and specifically it’s dbConnect() and dbSendQuery() to connect to the database and send query request to the SQL server respectively. SQL was chosen over CSV files to efficiently handle the relational structure of the MusicOSet dataset, which spans multiple interrelated tables. SQL enables selective data retrieval through optimized queries, reducing memory consumption and processing redundant data. Additionally, SQL provides a reproducible framework that is scalable.
+This process is done in the script called “0_musicoset_data_loading.R”
+Exploratory Data Analysis
+Exploratory data analysis was done to find the pattern, trend, and anomaly of this dataset, showing the relationship among features with respect to the research questions. This section discusses insights related to the distribution, correlation, and other important aspects serving as the bedrock of feature selection and model training.
+Firstly, we analyzed the distribution of popularity of the songs since it’s the target variable which we are going to predict. This distribution in Figure 1 revealed significant variability across the dataset, with a large concentration of songs in the lower popularity ranges. This skew in the target variable emphasized the importance of using evaluation metrics, such as RMSE and MAE, to capture both central and extreme predictions accurately. Additionally, because it’s a continuous variable it justifies the use of regression models.
+ 
+We also checked the distribution of types of songs and if they are explicit or not and plotted bar graphs. Figure 2 showing that most songs are non-explicit, furthermore Figure 3 highlights that solo songs significantly outnumber collaborations. These two features are included in the analysis since we want to understand how every feature affect the regression modelling.
+ 
+ 
 
-The data is available as CSV and SQL script that generates the data. In this project, the SQL Script is used which ran on MySQL Server to create the data on the database called ‘musicoset’ which is then used in the R scripts to ingest directly into the R environment, so the further processing and mining can be done. Once Ingested, the data was converted to data table for high performance manipulation and for this we have use the library called **data.table** and then saved as RData, ensuring that the coming scripts can just use the RData and don’t have to load the data again and again which could be time taking.
+One thing we noticed when it came to artist features, the total number of artist followers given in Figure 4 has shown growth over the years illustrating a steep increase in recent decade. This trend underscores the importance of including artist popularity metrics, such as total followers, as key predictors in the modeling process.
+ 
+The distributions of acousticness, danceability, energy, and valence in Figure 5 reveal their variability and potential influence on song popularity. For instance, danceability and energy exhibit balanced distributions, while acousticness skews lower. These features are often emphasized in music literature for their role in audience engagement, supporting their inclusion in predictive modeling.  (https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0275228&utm_source=chatgpt.com)
+ 
 
-For this SQL database ingestion, **RMySQL** library is used and specifically it’s **dbConnect()** and **dbSendQuery()** to connect to the database and send query request to the SQL server respectively.  SQL was chosen over CSV files to efficiently handle the relational structure of the MusicOSet dataset, which spans multiple interrelated tables. SQL enables selective data retrieval through optimized queries, reducing memory consumption and processing redundant data. Additionally, SQL provides a reproducible framework that is scalable.
-
-This process is done in the script called “**0_musicoset_data_loading.R**”
-
-[? Example of the dataset]
-
-2.1.2 Exploratory Data Analysis
-
-(Something we can complete at the END)
-
-2.1.3 Data preprocessing and Cleaning
-
-The data preprocessing is done in “**2_data_preprocessing.R”.** The aim is to predict the song popularity, so we need distinct song_ids to work with, so firstly we dropped the rows that doesn’t have any song_ids, fortunately there was only one datapoint with an empty string in song_id, so we dropped it.
-
-Then comes the process of adding songs features, artist characteristics, acoustic features, and then finally the lyrical features that we will engineer. Firstly, we add the songs features like the latest year_end_score and year for the songs from df_pop_songs. The latest year_end_score is taken to capture the most uptodate status of the song sine the there were several year_end_score given for different years and for the songs that doesn’t have the year_end_score available we impute the values with average year_end_score with the songs have the same popularity because this preserved the relationship between popularity and year_end_score furthermore, the missing values for years were replaced with median which robustly handles outliers. afterwards we joined the acoustic features to the dataset such as tempo, danceability and enery.
-
+The boxplot in Figure 6 illustrates variations in danceability across time signatures, with specific rhythmic patterns showing higher median values. Time signatures are linked to a song’s structure and its audience appeal. Identifying patterns in danceability across these signatures justifies their use in feature selection, as rhythmic attributes may influence popularity. (https://github.com/halpeter/Danceability-Analysis?utm_source=chatgpt.com)
+ 
+Figure 7 illustrates the correlation heatmap of non-lyrical features, including acoustic and artist-related attributes. Strong correlations are observed between popularity and features like total followers, average artist popularity, and acoustic features such as danceability and energy, emphasizing their influence on a song's success. Explicit content shows weaker correlations, suggesting its impact is context dependent. These insights informed the prioritization of significant features during model training.
+ 
+This EDA provided critical insights into the dataset’s structure, distributions, and relationships. By examining key attributes such as popularity, explicit content etc. we identified some pattern that are crucial for the next steps for data processing and also initially what kind of problem classification or regression it should be including the most important evaluation metrics. One more that came to notice is that label encoding also must take place since, song type and explicit/non-explicit are categorical variables with text and that has to change for interpretability by the regression model. Based on the correlation heatmap, it shows that some features like tempo and key doesn’t have a high correlation with popularity that means that they have a very weak correlation with popularity but they were not dropped because they could still contribute valuable information through non-linear relationships.
+Data preprocessing and Cleaning
+The data preprocessing is done in “2_data_preprocessing.R”. The aim is to predict the song popularity, so we need distinct song_ids to work with, so firstly we dropped the rows that doesn’t have any song_ids, fortunately there was only one datapoint with an empty string in song_id, so we dropped it.
+Then comes the process of adding songs features, artist characteristics, acoustic features, and then finally the lyrical features that we will engineer. Firstly, we add the songs features like the latest year_end_score and year for the songs from df_pop_songs. The latest year_end_score is taken to capture the most UpToDate status of the song sine the there were several year_end_score given for different years and for the songs that doesn’t have the year_end_score available we impute the values with average year_end_score with the songs have the same popularity because this preserved the relationship between popularity and year_end_score furthermore, the missing values for years were replaced with median which robustly handles outliers. afterwards we joined the acoustic features to the dataset such as tempo, danceability and energy.
 Then comes the artist features, Firstly we clean up the artist dataset and make it more consistent for example the artist_type has a few null which are given as a string as ‘-’ so these are given a new category called ‘not given’, this is done since we can safely assume that an artist has to be of some category and we don’t have to drop it furthermore, we have to change one the artist time ‘band’ which was inconsistent. Then, the follower’s data type as change to numeric since it can only be a numeric character but while doing that, it was realised there were inconsistent strings as ‘None’ which is nothing just 0 followers so that is also made consistent.
-
-Then comes the aggregation and addition of these artist features, why aggregation?, There’s one thing to note that one song can have more than one artist, and since the artist data is given on an artist level to join these features to song, we need to aggregate whenever there’s more than one artist involved in the song making.
-
+Then comes the aggregation and addition of these artist features, why aggregation? There’s one thing to note that one song can have more than one artist, and since the artist data is given on an artist level to join these features to song, we need to aggregate whenever there’s more than one artist involved in the song making.
 We added 6 features after aggregation:
+1.  num_artist: Number of artists that collaborated. This captures the scale of collaboration, which can influence a song’s appeal and reach.
+2.  total_artist_followers: Total number of followers of the contributing artists. A higher follower count indicates a larger fanbase, potentially contributing to a song’s popularity.
+3.  avg_artist_popularity: Average popularity score of the contributing artists. Popular artists often bring a significant boost to a song’s visibility and success.
+4.  unique_artist_main_genre: Number of unique main genres of the contributing artists. Diverse genres in collaboration can attract a broader audience and impact popularity.
+5.  unique_artist_type: Number of unique artist types involved. Including varied artist types (e.g., bands, solo singers) enriches the song's creative dimensions.
+6.  avg_artist_year_end_score: Average latest year-end score of the artists collaborating in the song. Using the latest score ensures the most up-to-date representation of an artist’s impact on song success.
+For the corner cases where there was no year_end_score given for the artist, we imputed those values with the mean of the average year_end_score of the artist. We used mean here to reflect the overall trend in the artist score and since it also a representative value.
+The lyrical features are not available in the default data so we engineer them since we have a research question for that. This process is given in the next section “Feature Engineering”.
+After the all the data preprocessing, cleaning and features engineering is done, the data is split into 70:30 ratio which adhere to the standard data science practice since this ensure that sufficient data is there for model training meanwhile enough is present for testing the accuracy of the models. 
+Lyrical Feature Engineering
+This features engineering is carried out to derive meaningful variables from the dataset specifically from the lyrical text data which aligns with our research question.
+In the previous section we have done some features engineering as well where we aggregated the artist features to include in the analysis, but here we have use only the lyrics text data.
+Firstly, we have cleaned the lyrical data that is given in the data table df_lyrics. The cleaning for this text data is done in steps given below.
+7.  Standardizing Text:  To standardize the text, we have removed the special characters and punctuation. This is done to have uniform text representation and also it’s a common NLP practice.
+8.  Handling the Non-Lyrical Entities (Corner Cases): While doing the analysis I came across some corner cases where the the lyrics are given as “”, “ssss”, and “instrumental”/”instrumental tracks” which are invalid or non-lyrical.
+For these cases all the values for the derived features were set to neutral default values since we can’t identify features when we don’t have text for instance the sentiment of the lyrics can’t be identified so they were given a neutral values. This prevents bias and make sure these songs doesn’t create skew features distribution.
+9.  Stop words handling:  Stop words were retained for some features to get the original word count but removed for others like lexical diversity. Retention of stop words give a more accurate total word count when required. so we end up having two columns with lyrics with and without stop words so they can be used for the respective features.
+After completing the cleaning of the text data, relevant features were engineered, carefully selected based on their potential utility and alignment with the research objectives. These features are given below:
+10. Sentiment Polarity: The sentiment polarity measure the overall emotional tone of the lyrics, this features is important because emotionally charged lyrics may resonate with the listener and might affect it’s popularity. These are calculated using Syuzhet package, and then they are normalized using the word count (with stop words
+11. Objectivity: This features tells use the neutrality of the lyrics since we know the neutral lyrics can target a broader audience but subjective lyrics can evoke stronger emotions which can lead to a change in the popularity. Objectivity is also normalized with the word count (including stop words)
+12. Word Count: This is the total number of words including the stop words and this helps in capturing the overall verbosity of the lyrics which reflects storytelling complexity and lyrical density.
+13. Lexical Diversity: Lexical diversity captures the linguistic variety. High diversity can make a song unique and engaging. Here, we use the Type-token Ratio, which is the ratio of the number of unique words to the number of total words. Here the stop words are included as well.
+14. Average Word Length: This features captures the mean number of characters per word (including the stop words). Longer words may indicate sophistication in lyrical composition.
+15. Repetition Ratio: Finally, repetition ration captures the proportion of the repeated words in the lyrics. The rationale behind it is that the repetition enhances the catchiness so called memorability of the songs which can directly have a correlation with popularity. for instance “bum bum tum tum by Mc Fioti”, has been a big hit but with repeated lyrics.
+After the feature are engineered, we join the main lyrical features with the other features. One thing to note here, there are about 3.6% of the songs that doesn’t have any entry in the lyrical database. Since these datapoints lacked corresponding data in the lyrical dataset, it made it impossible to derive meaning features from them and imputing them would create artificial data and could distort the analysis. So we dropped them as the standard data preprocessing practice of dropping entries when the proportion of missing data is less than 5% [2].
+Model Training and Hyperparameter Tuning
+After the preprocessing is done, the comes the training and optimization of the predictive models for predicting the song popularity which is a regression problem. The models that are used in this study are Linear Regression (baseline), Random Forest and XGBoost. Each model was trained on a dataset containing song features, artist attributes, and engineered lyrical features. These models are tested before and after the addition of the lyrical features to see how it affects the predictive power of the model, furthermore, the hyperparameter tuning is also done for the Random Forest and XGBoost Regressors using gridSearch method with cross validation. A 5-fold cross-validation technique was used to evaluate model performance across multiple subsets of the training data, reducing the risk of overfitting and Grid search was chosen as the hyperparameter tuning approach to systematically test the combinations of hyperparameters, this also ensures that the best parameters of the models are saved. This process of training with and without lyrical feature followed by hyperparameter tuning improve the accuracy and interpretability of the models which is inconjunction with both of the research questions. Afterwards the models with the best parameters are finalized and test using the testing data (30%) and then evaluated using the evaluation metrics and other plots. The details of the models are given below:
+1.  Linear Regression: Linear Regression serves as the baseline model to evaluate the effectiveness of more complex machine learning algorithms. It’s chosen as a baseline model to establish a foundation benchmark since it’s a very simple modelling algorithm. It is implemented using the ‘lm’ function in R, furthermore, the model is trained without tuning since linear regression lacks hyperparameter options.
 
-- **num_artist**: Number of artists that collaborated.
-    
-    *This captures the scale of collaboration, which can influence a song’s appeal and reach.*
-    
-- **total_artist_followers**: Total number of followers of the contributing artists.
-    
-    *A higher follower count indicates a larger fanbase, potentially contributing to a song’s popularity.*
-    
-- **avg_artist_popularity**: Average popularity score of the contributing artists.
-    
-    *Popular artists often bring a significant boost to a song’s visibility and success.*
-    
-- **unique_artist_main_genre**: Number of unique main genres of the contributing artists.
-    
-    *Diverse genres in collaboration can attract a broader audience and impact popularity.*
-    
-- **unique_artist_type**: Number of unique artist types involved.
-    
-    *Including varied artist types (e.g., bands, solo singers) enriches the song's creative dimensions.*
-    
-- **avg_artist_year_end_score**: Average latest year-end score of the artists collaborating in the song.
-    
-    *Using the latest score ensures the most up-to-date representation of an artist’s impact on song success.*
-    
-    For the corner cases where there was no year_end_score given for the artist, we imputed those values with the mean of the average year_end_score of the artist. We used mean here to reflect the overall trend in the artist score and since it also a representative value.
-    
-    The lyrical features are not available in the default data so we engineer them since we have a research question for that. This process is given in the next section “Feature Engineering”.
-    
-    After the all the data preprocessing, cleaning and features engineering is done, the data is split into 70:30 ratio which adhere to the standard data science practice since this ensure that sufficient data is there for model training meanwhile enough is present for testing the accuracy of the models. [? add scaling of song_popularity]
-    
-    2.1.4 Lyrical Feature Engineering
-    
-    This features engineering is carried out to derive meaningful variables from the dataset specifically from the lyrical text data which aligns with our research question.
-    
-    In the previous section we have done some features engineering as well where we aggregated the artist features to include in the analysis, but here we have use only the lyrics text data.
-    
-    [?example of lyrical data]
-    
-    Firstly, we have cleaned the lyrical data that is given in the data table df_lyrics. The cleaning for this text data is done in steps given below.
-    
-    1. Standardizing Text:
-        - To standardize the text, we have removed the special characters and punctuation. This is done to have uniform text representation and also it’s a common NLP practice.
-    2. Handling the Non-Lyrical Entities (Corner Cases):
-        - While doing the analysis I came across some corner cases where the the lyrics are given as “”, “ssss”, and “instrumental”/”instrumental tracks” which are invalid or non-lyrical.
-        - For these cases all the values for the derived features were set to neutral default values since we can’t identify features when we don’t have text for instance the sentiment of the lyrics can’t be identified so they were given a neutral values. This prevents bias and make sure these songs doesn’t create skew features distribution.
-    3. Stopwords handling:
-        - Stopwords were retained for some features to get the original word count but removed for others like lexical diversity. Retention of stopwords give a more accurate total word count when required. so we end up having two columns with lyrics with and without stopwords so they can be used for the respective features.
-    
-    After completing the cleaning of the text data, relevant features were engineered, carefully selected based on their potential utility and alignment with the research objectives. These features are given below:
-    
-    1. Sentiment Polarity:
-        - The sentiment polarity measure the overall emotional tone of the lyrics, this features is important because emotionally charged lyrics may resonate with the listener and might affect it’s popularity. These are calculated using Syuzhet package, and then they are normalized using the word count (with stop words) [?why normalization]
-    2. Objectivity:
-        - This features tells use the neutrality of the lyrics since we know the neutral lyrics can target a broader audience but subjective lyrics can evoke stronger emotions which can lead to a change in the popularity. Objectivity is also normalized with the word count (including stop words) [?why normalization]
-    3. Word Count:
-        - This is the total number of words including the stop words and this helps in capturing the overall verbosity of the lyrics which reflects storytelling complexity and lyrical density.
-    4. Lexical Diversity
-        - Lexical diversity captures the linguistic variety. High diversity can make a song unique and engaging. Here, we use the Type-token Ratio, which is the ratio of the number of unique words to the number of total words. Here the stop words are included as well.
-    5. Average Word Length:
-        - This features captures the mean number of characters per word (including the stop words). Longer words may indicate sophistication in lyrical composition.
-    6. Repetition Ratio:
-        - Finally, repetition ration captures the proportion of the repeated words in the lyrics. The rationale behind it is that the repetition enhances the catchiness so called memorability of the songs which can directly have a correlation with popularity. for instance bum bum tum tum by Mc Fioti, has been a big hit but with repeated lyrics.
-    
-    After the feature are engineered, we join the main lyrical features with the other features. One thing to note here, there are about 3.6% of the songs that doesn’t have any entry in the lyrical database. Since these datapoints lacked corresponding data in the lyrical dataset, it made it impossible to derive meaning features from them and imputing them would create artificial data and could distort the analysis. So we dropped them as the standard data preprocessing practice of dropping entries when the proportion of missing data is less than 5% [2].
-    
-    [? Final table of how dataset looked] 
-    
-    2.1.5 Model Training and Hyperparameter Tuning
-    
-    After the preprocessing is done, the comes the training and optimization of the predictive models for predicting the song popularity which is a regression problem. The models that are used in this study are Linear Regression (baseline), Random Forest and XGBoost. Each model was trained on a dataset containing song features, artist attributes, and engineered lyrical features. These models are tested before and after the addition of the lyrical features to see how it affects the predictive power of the model, furthermore, the hyperparameter tuning is also done for the Random Forest and XGBoost Regressors using gridSearch method with cross validation. A 5-fold cross-validation technique was used to evaluate model performance across multiple subsets of the training data, reducing the risk of overfitting and Grid search was chosen as the hyperparameter tuning approach to systematically test the combinations of hyperparameters, this also ensures that the best parameters of the models are saved. This process of training with and without lyrical feature followed by hyperparameter tuning improve the accuracy and interpretability of the models which is inconjunction with both of the research questions. Afterwards the models with the best parameters are finalized and test using the testing data (30%) and then evaluated using the evaluation metrics and other plots. The details of the models are given below:
-    
-    1. Linear Regression: Linear Regression serves as the baseline model to evaluate the effectiveness of more complex machine learning algorithms. It’s chosen as a baseline model to establish a foundation benchmark since it’s a very simple modelling algorithm.
-    It is implemented using the ‘lm’ function in R, furthermore, the model is trained without tuning since linear regression lacks hyperparameter options.
-    2. Random Forest: Random Forest is a bit more advanced machine learning algorithm and chose for its robustness in handling high-dimensional data and its ability to identify feature importance.
-        
-        It is implemented using a package called caret with ranger implementation. Then the grid search strategy is with 5 fold cross validation was used to optimize 3 parameters called mtry which is number of features for splits, splitrule that is criteria for node splitting (variance used generally for regression) and min.node.size which is minimum size of terminal nodes.
-        [? proper table]
-        
-        ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/530dccc8-9dcb-4632-9b65-c4fc4f5e840c/64594a8b-8255-447e-99aa-06f1eeaff996/image.png)
-        
-    3. XGBoost: XGBoost is also an advanced machine learning algorithm which is chosen because of it’s efficiency in handling structured data and imbalanced datasets and also it has it’s own functions to calculate the features importance.
-        
-        It is also implemented using a package called caret with ranger implementation. Then the grid search strategy is with 5 fold cross validation used to optimize 7 parameters called nrounds that is number of boosting round, max_depth that is maximum tree depth, eta (learning rate), gamma (loss for plit), colsample_bytree (fraction of features for tree splits), min_child_weight (Minimum sum of weights for child nodes) and sumsample (Fraction of samples for each boosting round).
-        
-        After tuning all the parameters, the best hyperparaters came out to be. [? proper table]
-        
-    
-    ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/530dccc8-9dcb-4632-9b65-c4fc4f5e840c/8e436302-ff96-4d95-959e-b16c4b147133/image.png)
-    
-    2.1.6 Evaluation Metrics
-    
-    Finally, to effectively evaluate the performance of the predictive models, we are using three metrics that are widely accepted for regression problems that are given below:
-    
-    1. Root Mean Squared Error (RMSE):
-        - RMSE measure the average magnitude of the prediction error by emphasizing large errors. This is particularly useful for identifying models that predict the high and low values of the popularity. It ensure the model’s robustness for extreme popularity scores.
-        - Its’s used in a similar study "Predicting Song Popularity Using Machine Learning Algorithms" by Kakkad et al., where regression models were evaluated for song popularity prediction using this metric [3].
-    2. Mean Absolute Error (MAE):
-        - MAE provides an average of absolute prediction errors without amplifying the effect of large residuals, offering a balanced understanding of the model's performance. It complements RMSE by focusing on all errors equally, regardless of magnitude.
-        - The metric has been effectively employed in studies like "Beyond Beats: A Recipe to Song Popularity? A Machine Learning Approach" by Jung and Mayer, emphasizing its relevance in analyzing predictive accuracy [4].
-    3. R-Squared (R²):
-        - R² quantifies the proportion of variance in the target variable (popularity) that the model explains. It is particularly beneficial for interpreting the effectiveness of feature selection and engineering as highlighted in "Predicting Song Popularity" by Stanford researchers, R² is a critical metric for assessing model performance in the domain of song popularity prediction [5].
-    
-    To further assess model performance and add a visual component to it, A residual analysis is done and the distribution is plotted. The residual here is just the difference between the actual and predicted values. This is useful to understand the error centering, where a good model will have the residuals centered around zero indicating unbiased prediction across the popularity scores and also the error spread, this gives an idea about the variability in the prediction since the narrower spread indicates higher accuracy and consistency.
-    
-    These density plot of residuals were created for each model to compare performance in conjunction with the RMSE, MAE and R-Squared metrics.
-    
-    ## Answering the Research Question
-    
-    1. What combination of song, artist, and acoustic features contributes most to the accurate prediction of song popularity for optimized machine learning models?
-        
-        To address this question, song, artist, and acoustic features are combined and preprocessed into a unified dataset. Features that can be relevant are selected, including energy, danceability, and artist genre. Afterward, three machine learning models were trained on the 70-30 train-test split with optimized hyperparameters using grid search with cross-validation: Linear Regression, Random Forest, and XGBoost. Feature importance metrics, such as the IncNodePurity and gain, were examined in order to pinpoint which features best explain the popularity of a song. This structured approach would ensure that the research ascertains essential predictors while assessing the effectiveness of refined models.
-        
-        By examining feature importance values and residual plots, the analysis uncovers relationships between feature combinations and prediction accuracy. The results quantitatively demonstrate which attributes significantly influence popularity predictions and how various models interpret these features, answering the research question while aligning with the study’s broader aim of uncovering key drivers of song popularity.
-        
-    
-    1. How does the inclusion of lyrical features, such as sentiment polarity and other linguistic attributes, enhance the predictive accuracy and interpretability of machine learning models after optimization?
-    
-    This question is addressed by adding lyrical features of the songs, such as sentiment polarity, objectivity, and lexical diversity to the dataset. Both lyrical and nonlyrical datasets are used for the training of models to identify the effect of lyrical features on the predictive performance based on metrics such as RMSE, MAE, and R². Residual plots and feature importance metrics highlight how these features impact model predictions and interpretability. By comparing results, the study evaluates whether lyrical features improve prediction accuracy and provide deeper insights into the creative and emotional aspects of songs.
-    
-    Lyrical features offer a further dimension of understanding of the drivers of popularity. Indeed, findings indicate that these increase model performance and interpretability, effectively answering the research question, while aligning with the objective of improving the accuracy through integrations of the feature.
-    
-    **ref (bro change the urls and remove chat gpt from them)**
-    
-    [1] https://marianaossilva.github.io/DSW2019/index.html
-    
-    [2] Bridging the Data Gap: How to Deal with Missing Data in Observational Studies
-    
-    (https://www.hubresearch.ca/bridging-the-data-gap-how-to-deal-with-missing-data-in-observational-studies/?utm_source=chatgpt.com)
-    
-    [3] **"Predicting Song Popularity Using Machine Learning Algorithms"** by Yashraj Kakkad et al. (https://github.com/yashrajkakkad/song-popularity-prediction?utm_source=chatgpt.com)
-    
-    [4] **"Beyond Beats: A Recipe to Song Popularity? A Machine Learning Approach"** by Niklas Sebastian Jung and Florian Mayer. (https://arxiv.org/abs/2403.12079?utm_source=chatgpt.com)
-    
-    [5] **"Predicting Song Popularity"** by Stanford University researchers. (https://cs229.stanford.edu/proj2015/140_report.pdf?utm_source=chatgpt.com)
-    
-    [6] https://www.r-bloggers.com/2024/01/xgboost-tuning-the-hyperparameters-my-secret-2-step-process-in-r/
-    
-    [7] For EDA https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf
+2.  Random Forest: Random Forest is a bit more advanced machine learning algorithm and chose for its robustness in handling high-dimensional data and its ability to identify feature importance. It is implemented using a package called caret with ranger implementation. Then the grid search strategy is with 5 fold cross validation was used to optimize 3 parameters called “mtry” which is number of features for splits, splitrule that is criteria for node splitting (variance used generally for regression) and min.node.size which is minimum size of terminal nodes.
+ 
+3.  XGBoost: XGBoost is also an advanced machine learning algorithm which is chosen because of it’s efficiency in handling structured data and imbalanced datasets and also it has it’s own functions to calculate the features importance. It is also implemented using a package called caret with ranger implementation. Then the grid search strategy is with 5 fold cross validation used to optimize 7 parameters called nrounds that is number of boosting round, max_depth that is maximum tree depth, eta (learning rate), gamma (loss for plit), colsample_bytree (fraction of features for tree splits), min_child_weight (Minimum sum of weights for child nodes) and sumsample (Fraction of samples for each boosting round). 
+After tuning all the parameters, the best hyperparaters came out to be.
+ 
+Evaluation Metrics
+Finally, to effectively evaluate the performance of the predictive models, we are using three metrics that are widely accepted for regression problems that are given below:
+•   Root Mean Squared Error (RMSE):  RMSE measure the average magnitude of the prediction error by emphasizing large errors. This is particularly useful for identifying models that predict the high and low values of the popularity. It ensures the model’s robustness for extreme popularity scores.
+Its’s used in a similar study "Predicting Song Popularity Using Machine Learning Algorithms" by Kakkad et al., where regression models were evaluated for song popularity prediction using this metric [3].
+•   Mean Absolute Error (MAE): MAE provides an average of absolute prediction errors without amplifying the effect of large residuals, offering a balanced understanding of the model's performance. It complements RMSE by focusing on all errors equally, regardless of magnitude.
+The metric has been effectively employed in studies like "Beyond Beats: A Recipe to Song Popularity? A Machine Learning Approach" by Jung and Mayer, emphasizing its relevance in analyzing predictive accuracy [4].
+•   R-Squared (R²):  R² quantifies the proportion of variance in the target variable (popularity) that the model explains. It is particularly beneficial for interpreting the effectiveness of feature selection and engineering as highlighted in "Predicting Song Popularity" by Stanford researchers, R² is a critical metric for assessing model performance in the domain of song popularity prediction [5].
+To further assess model performance and add a visual component to it, A residual analysis is done, and the distribution is plotted. The residual here is just the difference between the actual and predicted values. This is useful to understand the error centering, where a good model will have the residuals centered around zero indicating unbiased prediction across the popularity scores and the error spread, this gives an idea about the variability in the prediction since the narrower spread indicates higher accuracy and consistency.
+These density plots of residuals were created for each model to compare performance in conjunction with the RMSE, MAE and R-Squared metrics.
+ANSWERING THE RESEARCH QUESTIONS
+What combination of song, artist, and acoustic features contributes most to the accurate prediction of song popularity for optimized machine learning models?
+To address this question, song, artist, and acoustic features are combined and preprocessed into a unified dataset. Features that can be relevant are selected, including energy, danceability, and artist genre. Afterward, three machine learning models were trained on the 70-30 train-test split with optimized hyperparameters using grid search with cross-validation: Linear Regression, Random Forest, and XGBoost. Feature importance metrics, such as the IncNodePurity and gain, were examined in order to pinpoint which features best explain the popularity of a song. This structured approach would ensure that the research ascertains essential predictors while assessing the effectiveness of refined models.
+By examining feature importance values and residual plots, the analysis uncovers relationships between feature combinations and prediction accuracy. The results quantitatively demonstrate which attributes significantly influence popularity predictions and how various models interpret these features, answering the research question while aligning with the study’s broader aim of uncovering key drivers of song popularity.
+How does the inclusion of lyrical features, such as sentiment polarity and other linguistic attributes, enhance the predictive accuracy and interpretability of machine learning models after optimization?
+This question is addressed by adding lyrical features of the songs, such as sentiment polarity, objectivity, and lexical diversity to the dataset. Both lyrical and nonlyrical datasets are used for the training of models to identify the effect of lyrical features on the predictive performance based on metrics such as RMSE, MAE, and R². Residual plots and feature importance metrics highlight how these features impact model predictions and interpretability. By comparing results, the study evaluates whether lyrical features improve prediction accuracy and provide deeper insights into the creative and emotional aspects of songs.
+Lyrical features offer a further dimension of understanding of the drivers of popularity. Indeed, findings indicate that these increase model performance and interpretability, effectively answering the research question, while aligning with the objective of improving the accuracy through integrations of the feature.
+
+RESULTS AND DISCUSSION
+
+
+
+
+
