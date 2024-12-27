@@ -1,42 +1,26 @@
 Linear Regression :: -----------------------
 
-[1] "Root Mean Squared Error :: 13.794"
-[1] "Mean Absolute Error :: 11.033"
-[1] "R Squared Error :: 0.608"
+-- Without Lyrics
+[1] "Root Mean Squared Error :: 14.081"
+[1] "Mean Absolute Error :: 11.32"
+[1] "R Squared Error :: 0.589"
 
- -- Lyrics
-[1] "Root Mean Squared Error :: 13.831"
-[1] "Mean Absolute Error :: 11.1"
-[1] "R Squared Error :: 0.61"
-
- -- After Feature Eng and Cleaning a bit more
-[1] "Root Mean Squared Error :: 7.631"
-[1] "Mean Absolute Error :: 5.708"
-[1] "R Squared Error :: 0.879"
+-- With Lyrics
 
 Random Forest :: -----------------------
 
-[1] "Root Mean Squared Error :: 12.574"
-[1] "Mean Absolute Error :: 10.024"
-[1] "R Squared Error :: 0.679"
+-- Without Lyrics
+[1] "Root Mean Squared Error :: 12.697"
+[1] "Mean Absolute Error :: 10.069"
+[1] "R Squared Error :: 0.667"
 
- -- Lyrics
-[1] "Root Mean Squared Error :: 12.683"
-[1] "Mean Absolute Error :: 10.153"
-[1] "R Squared Error :: 0.677"
+-- With Lyrics
 
 XGBoost :: -----------------------
 
-[1] "Root Mean Squared Error :: 12.436"
-[1] "Mean Absolute Error :: 9.726"
-[1] "R Squared Error :: 0.681"
+-- Without Lyrics
+[1] "Root Mean Squared Error :: 12.705"
+[1] "Mean Absolute Error :: 9.976"
+[1] "R Squared Error :: 0.665"
 
- -- Lyrics
-[1] "Root Mean Squared Error :: 12.516"
-[1] "Mean Absolute Error :: 9.779"
-[1] "R Squared Error :: 0.681"
-
--- After Feature Eng and Cleaning a bit more
-[1] "Root Mean Squared Error :: 0.641"
-[1] "Mean Absolute Error :: 0.467"
-[1] "R Squared Error :: 0.999"
+-- With Lyrics
