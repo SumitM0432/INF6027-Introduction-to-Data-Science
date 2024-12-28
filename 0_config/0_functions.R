@@ -81,7 +81,7 @@ pred_vs_actual_plot = function(results_data, model_name) {
   plot(pred_v_act)
   
   # Saving the plot in a folder
-  ggsave(paste0("Predicted_v_Actual_" , model_name, ".jpeg"), pred_v_act, path = paste0(getwd(), "/Plots/Results")) 
+  ggsave(paste0("Predicted_v_Actual_" , model_name, ".jpeg"), pred_v_act, path = paste0(getwd(), path_for_results)) 
 }
 
 residual_plot = function(results_data, model_name) {
@@ -109,5 +109,5 @@ residual_plot = function(results_data, model_name) {
   plot(res_plot)
   
   # Saving the plot in a folder
-  ggsave(paste0("Residual_Plot_" , model_name, ".jpeg"), res_plot, path = paste0(getwd(), "/Plots/Results")) 
+  ggsave(paste0("Residual_Plot_" , model_name, ".jpeg"), res_plot, path = paste0(getwd(), path_for_results)) 
 }

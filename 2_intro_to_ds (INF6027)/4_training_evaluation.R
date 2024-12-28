@@ -50,7 +50,7 @@ linear_imp = ggplot(feature_importance_linear, aes(x = reorder(Feature, Importan
 plot(linear_imp)
 
 # Saving the plot
-ggsave(paste0("Feature_Importance_linear_reg.jpeg"), linear_imp, path = paste0(getwd(), "/Plots")) 
+ggsave(paste0("Feature_Importance_linear_reg.jpeg"), linear_imp, path = paste0(getwd(), path_for_results)) 
 
 print(paste('--------------------------------', Sys.time(), 'RANDOM FOREST REGRESSION', '---'))
 
@@ -129,7 +129,7 @@ rf_imp = ggplot(feature_importance_rf, aes(x = reorder(features, importance), y 
 plot(rf_imp)
 
 # Saving the plot
-ggsave(paste0("Feature_Importance_rf_reg.jpeg"), rf_imp, path = paste0(getwd(), "/Plots")) 
+ggsave(paste0("Feature_Importance_rf_reg.jpeg"), rf_imp, path = paste0(getwd(), path_for_results)) 
 
 print(paste('--------------------------------', Sys.time(), 'XGB REGRESSION', '-------------'))
 
@@ -213,10 +213,16 @@ xgb_imp = ggplot(feature_importance_xgb, aes(x = reorder(Feature, Gain), y = Gai
 plot(xgb_imp)
 
 # Saving the plot
-ggsave(paste0("Feature_Importance_xgb_reg.jpeg"), xgb_imp, path = paste0(getwd(), "/Plots")) 
+ggsave(paste0("Feature_Importance_xgb_reg.jpeg"), xgb_imp, path = paste0(getwd(), path_for_results)) 
 
 print(paste('--------------------------------', Sys.time(), 'SAVING MODELS', '--------------'))
 
-saveRDS(linear_model, "Trained_Models/lm_model_est_lyrics.rds")
-saveRDS(rf_model, "Trained_Models/rf_model_est_lyrics.rds")
-saveRDS(xgb_model, "Trained_Models/xgb_model_est_lyrics.rds")
+if (lyrical_switch == TRUE) {
+  saveRDS(linear_model, "Trained_Models/With Lyrics/lm_model.rds")
+  saveRDS(rf_model, "Trained_Models/With Lyrics/rf_model.rds")
+  saveRDS(xgb_model, "Trained_Models/With Lyrics/xgb_model.rds")
+} else {
+  saveRDS(linear_model, "Trained_Models/Without Lyrics/lm_model.rds")
+  saveRDS(rf_model, "Trained_Models/Without Lyrics/rf_model.rds")
+  saveRDS(xgb_model, "Trained_Models/Without Lyrics/xgb_model.rds")
+}

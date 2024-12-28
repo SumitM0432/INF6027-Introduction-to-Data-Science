@@ -123,113 +123,119 @@ df_meta_songs = df_meta_songs %>%
                                             avg_artist_year_end_score)
          )
 
-print(paste('--------------------------------', Sys.time(), 'ADDING LYRICAL FEATURES', '-'))
-
-# CLEANING THE LYRICS
-# Removing unwanted character and also lower casing the words
-df_lyrics = df_lyrics %>%
-  # Removing the Unwanted Character except letters, and numbers from the lyrics
-  mutate(cleaned_lyrics = gsub("[^a-zA-Z0-9\\s]", " ", lyrics)) %>%
-  # Converting the lyrics to lower case
-  mutate(cleaned_lyrics = tolower(cleaned_lyrics)) %>%
-  # Making a new lyrics column to calculate the features where stop words also plays an important role
-  mutate(cleaned_lyrics_stop = cleaned_lyrics)
-
-# Removing Stop words
-df_lyrics = df_lyrics %>%
-  mutate(cleaned_lyrics = cleaned_lyrics %>%
-           # Split each row of 'cleaned_lyrics' into individual words using spaces as the delimiter
-           strsplit("\\s+") %>%
-           # Apply a function to each list of words
-           lapply(function(words) 
-             # For each list of words, removing those that match the stop words in English
-             paste(words[!words %in% stopwords("en")], collapse = " ")
-           ) %>%
-           # Creating a character vector from list
-           unlist())
-
-# Removing extra white spaces
-df_lyrics = df_lyrics %>%
-  # Multiple spaces between words
-  mutate(cleaned_lyrics = gsub("\\s+", " ", cleaned_lyrics),
-         cleaned_lyrics_stop = gsub("\\s+", " ", cleaned_lyrics_stop)) %>%
-  # Leading and Trailing spaces
-  mutate(cleaned_lyrics = trimws(cleaned_lyrics),
-         cleaned_lyrics_stop = trimws(cleaned_lyrics_stop))
-
-# EXTRACTING THE FEATURES
-# - Sentiment Polarity
-# - Objectivity (1 - Subjectivity)
-# - Word Count
-# - Lexical Diversity
-# - Average Word Length
-# - Repetition Ratio
-
-df_lyrics = df_lyrics %>%
-  # Calculating Word Count (including stop words to look at the features holistically)
-  mutate(word_count = str_count(cleaned_lyrics_stop, "\\S+")) %>%
-  # Calculating Sentiment Polarity (without stop words since stop words doesn't have any sentiment)
-  mutate(sentiment_polarity = get_sentiment(cleaned_lyrics, method = "syuzhet") / word_count) %>%
-  # Calculating Objectivity Score from the Subjectivity Score (Normalized)
-  mutate(subjectivity = get_sentiment(cleaned_lyrics, method = "afinn") / word_count) %>%
-  mutate(objectivity = 1 - subjectivity)
-
-# Calculating the Lexical Diversity (including stop words)
-lexical_df = df_lyrics %>%
-  # Tokenizing the lyrics into individual words
-  unnest_tokens(word, cleaned_lyrics_stop) %>%
-  # grouping by each song
-  group_by(song_id) %>%
-  summarise(
-    lexical_diversity = n_distinct(word) / n(),  # Calculating Type-Token Ratio
-    .groups = "drop" # Ungrouping the data table
-  )
-
-# Joining with main lyrical data table
-df_lyrics = df_lyrics %>%
-  left_join(lexical_df, by = c('song_id'))
-
-# Calculating average word length (including stop words)
-df_lyrics = df_lyrics %>%
-  mutate(avg_word_length = sapply(strsplit(cleaned_lyrics_stop, "\\s+"), 
-                                  function(words) mean(nchar(words))))
-
-# Calculating repetition ratio (including stop words)
-df_lyrics = df_lyrics %>%
-  mutate(
-    total_words = sapply(strsplit(cleaned_lyrics_stop, "\\s+"), length),
-    unique_words = sapply(strsplit(cleaned_lyrics_stop, "\\s+"), function(words) length(unique(words)))
-  ) %>%
-  mutate(repetition_ratio = 1 - (unique_words/total_words))
-
-# Taking care of some unusual cases where the lyrics are just "ssss", "", "instrumental", and "instrumental track
-df_lyrics %>%
-  mutate(num_char = nchar(lyrics)) %>%
-  filter(num_char <= 30) %>%
-  select(lyrics, cleaned_lyrics) %>%
-  distinct()
-
-# These lyrics justify nothing except for instrumental which depicts it has no lyrics so we handle these use cases
-# We reset the values to neutral since they can't be defined without the lyrics
-df_lyrics = df_lyrics %>%
-  mutate(
-    sentiment_polarity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, sentiment_polarity),
-    objectivity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0.5, objectivity),
-    word_count = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, word_count),
-    lexical_diversity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, lexical_diversity),
-    avg_word_length = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, avg_word_length),
-    repetition_ratio = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, repetition_ratio)
-  )
-
-# Selecting the required columns
-df_lyrics = df_lyrics %>%
-  select(song_id, sentiment_polarity, objectivity, word_count, lexical_diversity, avg_word_length, repetition_ratio)
-
-# Final join to get the lyrical features combined with songs features we processed earlier and dropping NA's
-df_meta_songs = df_meta_songs %>%
-  left_join(df_lyrics, by = c('song_id')) %>%
-  # Dropping the NA's where we can't calculate the lyrical features because the lyrical data is NULL for those songs
-  drop_na()
+# This piece of code engineer the lyrical features and run when we want to test the lyrical features as well
+if (lyrical_switch == TRUE){
+  
+  print(paste('--------------------------------', Sys.time(), 'ADDING LYRICAL FEATURES', '-'))
+  
+  # CLEANING THE LYRICS
+  # Removing unwanted character and also lower casing the words
+  df_lyrics = df_lyrics %>%
+    # Removing the Unwanted Character except letters, and numbers from the lyrics
+    mutate(cleaned_lyrics = gsub("[^a-zA-Z0-9\\s]", " ", lyrics)) %>%
+    # Converting the lyrics to lower case
+    mutate(cleaned_lyrics = tolower(cleaned_lyrics)) %>%
+    # Making a new lyrics column to calculate the features where stop words also plays an important role
+    mutate(cleaned_lyrics_stop = cleaned_lyrics)
+  
+  # Removing Stop words
+  df_lyrics = df_lyrics %>%
+    mutate(cleaned_lyrics = cleaned_lyrics %>%
+             # Split each row of 'cleaned_lyrics' into individual words using spaces as the delimiter
+             strsplit("\\s+") %>%
+             # Apply a function to each list of words
+             lapply(function(words) 
+               # For each list of words, removing those that match the stop words in English
+               paste(words[!words %in% stopwords("en")], collapse = " ")
+             ) %>%
+             # Creating a character vector from list
+             unlist())
+  
+  # Removing extra white spaces
+  df_lyrics = df_lyrics %>%
+    # Multiple spaces between words
+    mutate(cleaned_lyrics = gsub("\\s+", " ", cleaned_lyrics),
+           cleaned_lyrics_stop = gsub("\\s+", " ", cleaned_lyrics_stop)) %>%
+    # Leading and Trailing spaces
+    mutate(cleaned_lyrics = trimws(cleaned_lyrics),
+           cleaned_lyrics_stop = trimws(cleaned_lyrics_stop))
+  
+  # EXTRACTING THE FEATURES
+  # - Sentiment Polarity
+  # - Objectivity (1 - Subjectivity)
+  # - Word Count
+  # - Lexical Diversity
+  # - Average Word Length
+  # - Repetition Ratio
+  
+  df_lyrics = df_lyrics %>%
+    # Calculating Word Count (including stop words to look at the features holistically)
+    mutate(word_count = str_count(cleaned_lyrics_stop, "\\S+")) %>%
+    # Calculating Sentiment Polarity (without stop words since stop words doesn't have any sentiment)
+    mutate(sentiment_polarity = get_sentiment(cleaned_lyrics, method = "syuzhet") / word_count) %>%
+    # Calculating Objectivity Score from the Subjectivity Score (Normalized)
+    mutate(subjectivity = get_sentiment(cleaned_lyrics, method = "afinn") / word_count) %>%
+    mutate(objectivity = 1 - subjectivity)
+  
+  # Calculating the Lexical Diversity (including stop words)
+  lexical_df = df_lyrics %>%
+    # Tokenizing the lyrics into individual words
+    unnest_tokens(word, cleaned_lyrics_stop) %>%
+    # grouping by each song
+    group_by(song_id) %>%
+    summarise(
+      lexical_diversity = n_distinct(word) / n(),  # Calculating Type-Token Ratio
+      .groups = "drop" # Ungrouping the data table
+    )
+  
+  # Joining with main lyrical data table
+  df_lyrics = df_lyrics %>%
+    left_join(lexical_df, by = c('song_id'))
+  
+  # Calculating average word length (including stop words)
+  df_lyrics = df_lyrics %>%
+    mutate(avg_word_length = sapply(strsplit(cleaned_lyrics_stop, "\\s+"), 
+                                    function(words) mean(nchar(words))))
+  
+  # Calculating repetition ratio (including stop words)
+  df_lyrics = df_lyrics %>%
+    mutate(
+      total_words = sapply(strsplit(cleaned_lyrics_stop, "\\s+"), length),
+      unique_words = sapply(strsplit(cleaned_lyrics_stop, "\\s+"), function(words) length(unique(words)))
+    ) %>%
+    mutate(repetition_ratio = 1 - (unique_words/total_words))
+  
+  # Taking care of some unusual cases where the lyrics are just "ssss", "", "instrumental", and "instrumental track
+  df_lyrics %>%
+    mutate(num_char = nchar(lyrics)) %>%
+    filter(num_char <= 30) %>%
+    select(lyrics, cleaned_lyrics) %>%
+    distinct()
+  
+  # These lyrics justify nothing except for instrumental which depicts it has no lyrics so we handle these use cases
+  # We reset the values to neutral since they can't be defined without the lyrics
+  df_lyrics = df_lyrics %>%
+    mutate(
+      sentiment_polarity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, sentiment_polarity),
+      objectivity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0.5, objectivity),
+      word_count = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, word_count),
+      lexical_diversity = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, lexical_diversity),
+      avg_word_length = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, avg_word_length),
+      repetition_ratio = ifelse(cleaned_lyrics %in% c("ssss", "", "instrumental", "instrumental track"), 0, repetition_ratio)
+    )
+  
+  # Selecting the required columns
+  df_lyrics = df_lyrics %>%
+    select(song_id, sentiment_polarity, objectivity, word_count, lexical_diversity, avg_word_length, repetition_ratio)
+  
+  # Final join to get the lyrical features combined with songs features we processed earlier and dropping NA's
+  df_meta_songs = df_meta_songs %>%
+    left_join(df_lyrics, by = c('song_id')) %>%
+    # Dropping the NA's where we can't calculate the lyrical features because the lyrical data is NULL for those songs
+    drop_na()
+} else {
+  print(paste('--------------------------------', Sys.time(), 'SKIPPING LYRICAL FEATURES'))
+}
 
 # Just Saving this dataset for EDA of lyrical features
 df_meta_songs_eda = copy(df_meta_songs)
@@ -255,9 +261,9 @@ print (paste0("Final Dataset Size :: ", nrow(df_meta_songs_encoded)))
 print(paste('--------------------------------', Sys.time(), 'SPLITTING DATA INTO TRAIN AND TEST DATA', '-'))
 
 # Splitting the data into train and test
-train_index <- sample(seq_len(nrow(df_meta_songs_encoded)), size = 0.7 * nrow(df_meta_songs_encoded))
-df_train <- df_meta_songs_encoded[train_index, ]
-df_test <- df_meta_songs_encoded[-train_index, ]
+train_index = sample(seq_len(nrow(df_meta_songs_encoded)), size = 0.7 * nrow(df_meta_songs_encoded))
+df_train = df_meta_songs_encoded[train_index, ]
+df_test = df_meta_songs_encoded[-train_index, ]
 
 print (paste0("Training Data Shape :: ", nrow(df_train), ", ", length(df_train)))
 print (paste0("Testing Data Shape :: ", nrow(df_test), ", ", length(df_test)))
@@ -278,5 +284,10 @@ df_train = df_train %>%
   select(-c(popularity))
 
 # Saving RData for decrease the data loading time
-tables_to_save <- c('X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test', 'df_meta_songs_eda')
-save(list = tables_to_save, file = paste0('RData/Processed_Music_Data.RData'))
+tables_to_save = c('X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test', 'df_meta_songs_eda')
+
+if (lyrical_switch == TRUE) {
+  save(list = tables_to_save, file = paste0('RData/Processed_Music_Data_lyrics.RData')) 
+} else {
+  save(list = tables_to_save, file = paste0('RData/Processed_Music_Data.RData'))
+}
