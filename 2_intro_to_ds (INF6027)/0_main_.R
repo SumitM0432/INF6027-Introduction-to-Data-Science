@@ -10,7 +10,7 @@ if (interactive()) {
 # TRUE Means EDA will run (Note: it doesn't effect the prediction and model training so should be run independently to reduce run time)
 exploratory_switch = FALSE
 
-# TRUE mean lyrical features will be generated and would be used for training except vice versa
+# TRUE mean lyrical features will be generated and would be used for training except vice-versa
 lyrical_switch = TRUE
 
 if (lyrical_switch == TRUE) {

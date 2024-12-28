@@ -111,3 +111,26 @@ residual_plot = function(results_data, model_name) {
   # Saving the plot in a folder
   ggsave(paste0("Residual_Plot_" , model_name, ".jpeg"), res_plot, path = paste0(getwd(), path_for_results)) 
 }
+
+feature_importance_plot = function(feature_importance_df, model_name_title, importance_type) {
+  
+  feature_imp_plot = ggplot(feature_importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
+    geom_bar(stat = "identity", fill = ifelse(lyrical_switch == TRUE, 'lightseagreen', 'orange1')) + # Using stat as identity to skip the aggregation since we already have values
+    coord_flip() +
+    labs(
+      title = paste0("Feature Importance : ", model_name_title),
+      x = "Features",
+      y = paste0("Importance (", importance_type, ")")
+    ) +
+    theme_minimal() +
+    theme(text = element_text(family = 'mono'),
+          plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
+          axis.text.x = element_text(size = 10, face = 'bold'),
+          axis.text.y = element_text(size = 10, face = 'bold'))
+  
+  # Plotting
+  plot(feature_imp_plot)
+  
+  # Saving the plot
+  ggsave(paste0("Feature_Importance ", model_name_title, ".jpeg"), feature_imp_plot, path = paste0(getwd(), path_for_results)) 
+}

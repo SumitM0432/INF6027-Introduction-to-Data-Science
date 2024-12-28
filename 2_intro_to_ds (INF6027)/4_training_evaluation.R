@@ -32,25 +32,10 @@ feature_importance_linear = data.frame(
   Importance = coefficients[-1]
 )
 
-linear_imp = ggplot(feature_importance_linear, aes(x = reorder(Feature, Importance), y = Importance)) +
-  geom_bar(stat = "identity", fill = "lightseagreen") + # Using stat as identity to skip the aggregation since we already have values
-  coord_flip() +
-  labs(
-    title = "Feature Importance : Linear Regression ",
-    x = "Features",
-    y = "Coefficient Value"
-  ) +
-  theme_minimal() +
-  theme(text = element_text(family = 'mono'),
-        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
-        axis.text.x = element_text(size = 10, face = 'bold'),
-        axis.text.y = element_text(size = 10, face = 'bold'))
-
-# Plotting
-plot(linear_imp)
-
-# Saving the plot
-ggsave(paste0("Feature_Importance_linear_reg.jpeg"), linear_imp, path = paste0(getwd(), path_for_results)) 
+# Plotting and Saving Feature Importance graph
+feature_importance_plot(feature_importance_df = feature_importance_linear,
+                        model_name_title = 'Linear Regression',
+                        importance_type = 'Coefficient Value')
 
 print(paste('--------------------------------', Sys.time(), 'RANDOM FOREST REGRESSION', '---'))
 
@@ -105,31 +90,16 @@ residual_plot(results_data = results_data, model_name = 'rf_reg')
 # Extract feature importance from the ranger model within the caret object
 rf_importance = varImp(rf_model, scale = FALSE)
 
-# Convert to a data frame and some minor adjustments
+# Convert to a data frame and some minor adjustments for consistency
 feature_importance_rf = as.data.frame(rf_importance$importance) %>%
   mutate(features = rownames(rf_importance$importance)) %>%
-  rename('importance' = 'Overall')
+  rename('Importance' = 'Overall') %>%
+  rename('Feature' = 'features')
 
-# Plot feature importance
-rf_imp = ggplot(feature_importance_rf, aes(x = reorder(features, importance), y = importance)) +
-  geom_bar(stat = "identity", fill = "lightseagreen") +
-  coord_flip() +
-  labs(
-    title = "Feature Importance : Random Forest",
-    x = "Features",
-    y = "Importance (IncNodePurity)"
-  ) +
-  theme_minimal() +
-  theme(text = element_text(family = 'mono'),
-        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
-        axis.text.x = element_text(size = 10, face = 'bold'),
-        axis.text.y = element_text(size = 10, face = 'bold'))
-
-# Plotting
-plot(rf_imp)
-
-# Saving the plot
-ggsave(paste0("Feature_Importance_rf_reg.jpeg"), rf_imp, path = paste0(getwd(), path_for_results)) 
+# Plotting and Saving Feature Importance graph
+feature_importance_plot(feature_importance_df = feature_importance_rf,
+                        model_name_title = 'Random Forest',
+                        importance_type = 'IncNodePurity')
 
 print(paste('--------------------------------', Sys.time(), 'XGB REGRESSION', '-------------'))
 
@@ -192,28 +162,14 @@ residual_plot(results_data = results_data, model_name = 'xgb_reg')
 xgb_importance = xgb.importance(model = xgb_model)
 
 # Convert importance matrix to data frame
-feature_importance_xgb = as.data.frame(xgb_importance)
+feature_importance_xgb = as.data.frame(xgb_importance) %>%
+  rename('Importance' = 'Gain') %>%
+  select(-c(Cover, Frequency))
 
-# Plot with ggplot2
-xgb_imp = ggplot(feature_importance_xgb, aes(x = reorder(Feature, Gain), y = Gain)) +
-  geom_bar(stat = "identity", fill = "lightseagreen") +
-  coord_flip() +
-  labs(
-    title = "Feature Importance : XGBOOST",
-    x = "Features",
-    y = "Importance (Gain)"
-  ) +
-  theme_minimal() +
-  theme(text = element_text(family = 'mono'),
-        plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
-        axis.text.x = element_text(size = 10, face = 'bold'),
-        axis.text.y = element_text(size = 10, face = 'bold'))
-
-# Plotting
-plot(xgb_imp)
-
-# Saving the plot
-ggsave(paste0("Feature_Importance_xgb_reg.jpeg"), xgb_imp, path = paste0(getwd(), path_for_results)) 
+# Plotting and Saving Feature Importance graph
+feature_importance_plot(feature_importance_df = feature_importance_xgb,
+                        model_name_title = 'XGBOOST',
+                        importance_type = 'Gain')
 
 print(paste('--------------------------------', Sys.time(), 'SAVING MODELS', '--------------'))
 
