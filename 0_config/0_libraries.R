@@ -21,7 +21,10 @@ library("stopwords")
 if (!requireNamespace("syuzhet")) install.packages("syuzhet")
 library("syuzhet")
 
-# For Model Training and Prediction
+# For Model Training, Prediction and Evaluation
+if (!requireNamespace("tidymodels")) install.packages("tidymodels")
+library("tidymodels")
+
 if (!requireNamespace("caret")) install.packages("caret")
 library("caret")
 

@@ -11,7 +11,7 @@ if (interactive()) {
 exploratory_switch = FALSE
 
 # TRUE mean lyrical features will be generated and would be used for training except vice versa
-lyrical_switch = FALSE
+lyrical_switch = TRUE
 
 if (lyrical_switch == TRUE) {
   path_for_results = '/Plots/Results/With Lyrics'

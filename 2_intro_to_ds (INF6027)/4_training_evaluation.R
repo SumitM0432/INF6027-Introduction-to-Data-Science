@@ -217,6 +217,12 @@ ggsave(paste0("Feature_Importance_xgb_reg.jpeg"), xgb_imp, path = paste0(getwd()
 
 print(paste('--------------------------------', Sys.time(), 'SAVING MODELS', '--------------'))
 
-saveRDS(linear_model, "Trained_Models/lm_model_est_lyrics.rds")
-saveRDS(rf_model, "Trained_Models/rf_model_est_lyrics.rds")
-saveRDS(xgb_model, "Trained_Models/xgb_model_est_lyrics.rds")
+if (lyrical_switch == TRUE) {
+  saveRDS(linear_model, "Trained_Models/With Lyrics/lm_model.rds")
+  saveRDS(rf_model, "Trained_Models/With Lyrics/rf_model.rds")
+  saveRDS(xgb_model, "Trained_Models/With Lyrics/xgb_model.rds")
+} else {
+  saveRDS(linear_model, "Trained_Models/Without Lyrics/lm_model.rds")
+  saveRDS(rf_model, "Trained_Models/Without Lyrics/rf_model.rds")
+  saveRDS(xgb_model, "Trained_Models/Without Lyrics/xgb_model.rds")
+}

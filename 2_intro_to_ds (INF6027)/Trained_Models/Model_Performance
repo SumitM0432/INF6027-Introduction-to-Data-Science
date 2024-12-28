@@ -1,0 +1,35 @@
+Linear Regression :: -----------------------
+
+-- Without Lyrics
+[1] "Root Mean Squared Error :: 14.081"
+[1] "Mean Absolute Error :: 11.32"
+[1] "R Squared Error :: 0.589"
+
+-- With Lyrics
+[1] "Root Mean Squared Error :: 14.072"
+[1] "Mean Absolute Error :: 11.349"
+[1] "R Squared Error :: 0.588"
+
+Random Forest :: -----------------------
+
+-- Without Lyrics
+[1] "Root Mean Squared Error :: 12.697"
+[1] "Mean Absolute Error :: 10.069"
+[1] "R Squared Error :: 0.667"
+
+-- With Lyrics
+[1] "Root Mean Squared Error :: 12.894"
+[1] "Mean Absolute Error :: 10.322"
+[1] "R Squared Error :: 0.658"
+
+XGBoost :: -----------------------
+
+-- Without Lyrics
+[1] "Root Mean Squared Error :: 12.705"
+[1] "Mean Absolute Error :: 9.976"
+[1] "R Squared Error :: 0.665"
+
+-- With Lyrics
+[1] "Root Mean Squared Error :: 12.712"
+[1] "Mean Absolute Error :: 9.964"
+[1] "R Squared Error :: 0.664"
