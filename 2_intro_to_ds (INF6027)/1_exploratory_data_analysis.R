@@ -4,7 +4,9 @@ theme_set(
     theme(text = element_text(family = 'mono'),
           plot.title = element_text(hjust = 0.5, size = 15, face = 'bold'),
           axis.text.x = element_text(size = 10, face = 'bold'),
-          axis.text.y = element_text(size = 10, face = 'bold'))
+          axis.text.y = element_text(size = 10, face = 'bold'),
+          legend.title = element_text(size = 12, face = "bold"),
+          legend.text = element_text(size = 10))
 )
 
 #### SONGS ---------------------------------------------------------------------
@@ -35,40 +37,61 @@ count_pop = df_meta_songs_2%>%
 # Count of songs with a popularity score >= 50
 sum(count_pop[count_pop$popularity >= 50, c('coun')])
 
-# Explicit bar graph (count of explicit and non-explicit songs)
-exp_bar = ggplot(df_meta_songs_2, aes(x = explicit)) +
-  geom_bar(fill = "red4") +
-  labs(
-    title = "Count of Explicit vs. Non-Explicit Songs",
-    x = "Explicit",
-    y = "Count"
-  )
-
-plot(exp_bar)
-ggsave(paste0("explicit_bar_graph.jpeg"), exp_bar, path = paste0(getwd(), "/Plots/EDA"))
-
-# Grouping songs by explicit content
-count_ex = df_meta_songs_2%>%
+# Preparing the data for the pie chart since we need a percentage and label
+explicit_distribution = df_meta_songs_2 %>%
   group_by(explicit) %>%
-  summarize(coun = n())
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100,
+         label = paste0(ifelse(explicit == 'True', 'Explicit', 'Not Explicit'), " (", round(percentage, 1), "%)"))
 
-# Song type bar graph
-# Analyzing the distribution of song types (Solo vs Collaboration)
-song_t = ggplot(df_meta_songs_2, aes(x = song_type)) +
-  geom_bar(fill = "steelblue") +
+# pie chart showing the distribution of explicit songs
+explicit_pie = ggplot(explicit_distribution, aes(x = "", y = count, fill = explicit)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") + # Changing to pie
+  labs(
+    title = "Distribution of Explicit Songs",
+    x = NULL,
+    y = NULL
+  ) +
+  theme_void() +  # To clear up the chart
+  geom_text(aes(label = label), position = position_stack(vjust = 0.5),
+            family = 'mono',
+            fontface = 'bold') +
+  scale_fill_manual(values = c("olivedrab3", "red3")) +
+  theme (plot.title = element_text(hjust = 0.5, size = 15, face = 'bold', family = 'mono'),
+         legend.title = element_text(size = 12, face = "bold", family = 'mono'),
+         legend.text = element_text(size = 10, family = 'mono'))
+
+plot(explicit_pie)
+ggsave(paste0("explicit_pie.jpeg"), explicit_pie, path = paste0(getwd(), "/Plots/EDA"))
+
+# Preparing the data for the pie chart since we need a percentage and label
+song_type_distribution = df_meta_songs_2 %>%
+  group_by(song_type) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100,
+         label = paste0(song_type, " (", round(percentage, 1), "%)"))
+
+# pie chart showing the distribution of song_type
+song_t_pie = ggplot(song_type_distribution, aes(x = "", y = count, fill = song_type)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") + # Changing to pie
   labs(
     title = "Distribution of Song Types",
-    x = "Song Type",
-    y = "Count"
-  )
+    x = NULL,
+    y = NULL
+  ) +
+  theme_void() +  # To clear up the chart
+  geom_text(aes(label = label), position = position_stack(vjust = 0.5),
+            family = 'mono',
+            fontface = 'bold') +
+  scale_fill_manual(values = c("orange", "steelblue")) +
+  theme (plot.title = element_text(hjust = 0.5, size = 15, face = 'bold', family = 'mono'),
+         legend.title = element_text(size = 12, face = "bold", family = 'mono'),
+         legend.text = element_text(size = 10, family = 'mono'))
 
-plot(song_t)
-ggsave(paste0("song_type_bar_graph.jpeg"), song_t, path = paste0(getwd(), "/Plots/EDA"))
-
-# Grouping by song type
-count_stype = df_meta_songs_2 %>%
-  group_by(song_type) %>%
-  summarize(coun = n())
+plot(song_t_pie)
+ggsave(paste0("song_type_pie.jpeg"), song_t_pie, path = paste0(getwd(), "/Plots/EDA"))
 
 # Top 10 artists with the highest number of songs
 # Breaking down songs by artist to identify those with the highest contributions
@@ -218,7 +241,7 @@ agg_followers = df_pop_artists %>%
   )
 
 followers_over_years = ggplot(agg_followers, aes(x = year, y = sum_fol)) +
-  geom_area(fill = "darkgreen") +
+  geom_area(fill = "sienna2") +
   scale_y_continuous(labels = label_number(scale = 1e-6, suffix = " M")) +
   scale_x_continuous(breaks = seq(min(agg_followers$year), max(agg_followers$year), by = 6)) +
   labs(
@@ -237,7 +260,7 @@ artist_type_bar = ggplot(df_meta_artists %>%
                              artist_type = ifelse(artist_type == '-', 'Not Given', artist_type)
                            ), 
                          aes(x = artist_type)) +
-  geom_bar(fill = "lightseagreen") +
+  geom_bar(fill = "seagreen") +
   labs(
     title = "Distribution of Artist Types",
     x = "Artist Type",

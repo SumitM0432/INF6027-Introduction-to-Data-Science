@@ -49,13 +49,10 @@ evaluation_metrics = function(results_data) {
   
   # Root Mean Squared Error (RMSE)
   rmse_val = rmse(results_data, truth = target_values,estimate = predicted_values)
-  # Mean Absolute Error (MAE)
-  mae_val = mae(results_data, truth = target_values, estimate = predicted_values)
   # R-squared
   rsq_val = rsq(results_data, truth = target_values, estimate = predicted_values)
   
   print (paste0("Root Mean Squared Error :: ", round(rmse_val$.estimate, 3)))
-  print (paste0("Mean Absolute Error :: ", round(mae_val$.estimate, 3)))
   print (paste0("R Squared Error :: ", round(rsq_val$.estimate, 3)))
   
 }
@@ -110,4 +107,27 @@ residual_plot = function(results_data, model_name) {
   
   # Saving the plot in a folder
   ggsave(paste0("Residual_Plot_" , model_name, ".jpeg"), res_plot, path = paste0(getwd(), path_for_results)) 
+}
+
+feature_importance_plot = function(feature_importance_df, model_name_title, importance_type) {
+  
+  feature_imp_plot = ggplot(feature_importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
+    geom_bar(stat = "identity", fill = ifelse(lyrical_switch == TRUE, 'lightseagreen', 'orange1')) + # Using stat as identity to skip the aggregation since we already have values
+    coord_flip() +
+    labs(
+      title = paste0("Feature Importance : ", model_name_title),
+      x = "Features",
+      y = paste0("Importance (", importance_type, ")")
+    ) +
+    theme_minimal() +
+    theme(text = element_text(family = 'mono'),
+          plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
+          axis.text.x = element_text(size = 10, face = 'bold'),
+          axis.text.y = element_text(size = 10, face = 'bold'))
+  
+  # Plotting
+  plot(feature_imp_plot)
+  
+  # Saving the plot
+  ggsave(paste0("Feature_Importance ", model_name_title, ".jpeg"), feature_imp_plot, path = paste0(getwd(), path_for_results)) 
 }
