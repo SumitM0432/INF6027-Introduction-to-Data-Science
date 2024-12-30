@@ -8,10 +8,10 @@ if (interactive()) {
 
 # VARIABLES TO SET BASED ON WHAT ANALYSIS IS BEING DONE
 # TRUE Means EDA will run (Note: it doesn't effect the prediction and model training so should be run independently to reduce run time)
-exploratory_switch = TRUE
+exploratory_switch = FALSE
 
 # TRUE mean lyrical features will be generated and would be used for training except vice-versa
-lyrical_switch = TRUE
+lyrical_switch = FALSE
 
 if (lyrical_switch == TRUE) {
   path_for_results = '/Plots/Results/With Lyrics'
