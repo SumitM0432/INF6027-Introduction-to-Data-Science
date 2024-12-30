@@ -85,7 +85,7 @@ song_t_pie = ggplot(song_type_distribution, aes(x = "", y = count, fill = song_t
   geom_text(aes(label = label), position = position_stack(vjust = 0.5),
             family = 'mono',
             fontface = 'bold') +
-  scale_fill_manual(values = c("steelblue", "orange")) +
+  scale_fill_manual(values = c("orange", "steelblue")) +
   theme (plot.title = element_text(hjust = 0.5, size = 15, face = 'bold', family = 'mono'),
          legend.title = element_text(size = 12, face = "bold", family = 'mono'),
          legend.text = element_text(size = 10, family = 'mono'))
@@ -241,7 +241,7 @@ agg_followers = df_pop_artists %>%
   )
 
 followers_over_years = ggplot(agg_followers, aes(x = year, y = sum_fol)) +
-  geom_area(fill = "darkgreen") +
+  geom_area(fill = "sienna2") +
   scale_y_continuous(labels = label_number(scale = 1e-6, suffix = " M")) +
   scale_x_continuous(breaks = seq(min(agg_followers$year), max(agg_followers$year), by = 6)) +
   labs(
@@ -260,7 +260,7 @@ artist_type_bar = ggplot(df_meta_artists %>%
                              artist_type = ifelse(artist_type == '-', 'Not Given', artist_type)
                            ), 
                          aes(x = artist_type)) +
-  geom_bar(fill = "lightseagreen") +
+  geom_bar(fill = "seagreen") +
   labs(
     title = "Distribution of Artist Types",
     x = "Artist Type",

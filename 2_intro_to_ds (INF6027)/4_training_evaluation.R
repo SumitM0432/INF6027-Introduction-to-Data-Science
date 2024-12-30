@@ -108,10 +108,7 @@ xgb_parameter_grid = expand.grid(
   nrounds = c(100, 150, 200),       # Fixed rounds for simplicity
   max_depth = c(4, 5, 6),       # Optimal value based on prior knowledge or exploration
   eta = c(0.05, 0.1, 0.15),           # Learning rate
-  gamma = c(0, 1),         # Regularization term
-  colsample_bytree = c(0.7, 0.8), # Subsampling for features
   min_child_weight = c(3, 5),   # Minimum child weight
-  subsample = c(0.7, 0.8)      # Subsampling for rows
 )
 
 # Doing 5 Folds cross-validation control
