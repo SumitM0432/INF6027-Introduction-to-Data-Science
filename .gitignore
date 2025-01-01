@@ -1,6 +1,7 @@
 /Data
 /.DS_Store
 /1_datasets
-/1_Datasets
+/INF4000 Data Visualization/1_Datasets/
+/INF6027 Introduction to Data Science/1_Datasets/
 *.rds
 *.db
