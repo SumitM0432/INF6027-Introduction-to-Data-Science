@@ -496,16 +496,22 @@ features = c("acousticness", "danceability", "energy", "valence")
 # Converting the dataset into a long format for easier faceting
 df_acoustic_features_long = df_acoustic_features %>%
   select(all_of(features)) %>%
-  pivot_longer(cols = everything(), names_to = "feature", values_to = "value")
+  pivot_longer(cols = everything(), names_to = "feature", values_to = "value") %>%
+  rename("Acoustic Features" = 'feature')
 
 # Density plot for feature distributions
-feature_distribution = ggplot(df_acoustic_features_long, aes(x = value, fill = feature)) +
+feature_distribution = ggplot(df_acoustic_features_long, aes(x = value, fill = `Acoustic Features`)) +
   geom_density(alpha = 0.6) +
-  facet_wrap(~feature, scales = "free") +
+  facet_wrap(~`Acoustic Features`, scales = "free") +
   labs(
     title = "Distribution of Key Acoustic Features", 
     x = "Feature Value", 
     y = "Density"
+  ) +
+  theme(
+    strip.text = element_text(size = 13, face = "bold"),
+    axis.text.x = element_text(size = 10, face = 'bold'),
+    axis.text.y = element_text(size = 10, face = 'bold')
   )
 
 plot(feature_distribution)
