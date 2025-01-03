@@ -22,10 +22,11 @@ pop_dist = ggplot(df_meta_songs_2, aes(x = popularity)) +
     title = "Distribution of Song Popularity Scores",
     x = "Popularity",
     y = "Count"
-  )
+  ) +
+  scale_x_continuous(breaks = seq(min(df_meta_songs_2$popularity), max(df_meta_songs_2$popularity), by = 15))
 
 plot(pop_dist)
-ggsave(paste0("popularity_distribution.jpeg"), pop_dist, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("popularity_distribution.jpeg"), pop_dist, path = "../3_Outputs/Plots/EDA")
 
 # Grouping songs by popularity and summarizing
 count_pop = df_meta_songs_2%>%
@@ -37,6 +38,27 @@ count_pop = df_meta_songs_2%>%
 # Count of songs with a popularity score >= 50
 sum(count_pop[count_pop$popularity >= 50, c('coun')])
 
+overtime_mean_pop = df_pop_songs %>%
+  left_join(df_meta_songs_2 %>% select(song_id, popularity) %>% distinct(), by = c('song_id')) %>%
+  select(year, popularity) %>%
+  distinct() %>%
+  group_by(year) %>%
+  summarize(
+    mean_pop = mean(popularity)
+  )
+
+overall_pop_time = ggplot(overtime_mean_pop, aes(x = year, y = mean_pop)) +
+  geom_line(color = "darkgreen", size = 1) +  # Line plot
+  labs(
+    title = "Mean Popularity Score Over the Years",
+    x = "Year",
+    y = "Popularity"
+  ) +
+  scale_x_continuous(breaks = seq(min(overtime_mean_pop$year), max(overtime_mean_pop$year), by = 6)) +
+  scale_y_continuous(breaks = seq(round(min(overtime_mean_pop$mean_pop)), round(max(overtime_mean_pop$mean_pop)), by = 4))
+
+plot(overall_pop_time)
+ggsave(paste0("mean_popularity_overtime.jpeg"), overall_pop_time, path = "../3_Outputs/Plots/EDA")
 # Preparing the data for the pie chart since we need a percentage and label
 explicit_distribution = df_meta_songs_2 %>%
   group_by(explicit) %>%
@@ -63,7 +85,7 @@ explicit_pie = ggplot(explicit_distribution, aes(x = "", y = count, fill = expli
          legend.text = element_text(size = 10, family = 'mono'))
 
 plot(explicit_pie)
-ggsave(paste0("explicit_pie.jpeg"), explicit_pie, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("explicit_pie.jpeg"), explicit_pie, path = "../3_Outputs/Plots/EDA")
 
 # Preparing the data for the pie chart since we need a percentage and label
 song_type_distribution = df_meta_songs_2 %>%
@@ -91,7 +113,7 @@ song_t_pie = ggplot(song_type_distribution, aes(x = "", y = count, fill = song_t
          legend.text = element_text(size = 10, family = 'mono'))
 
 plot(song_t_pie)
-ggsave(paste0("song_type_pie.jpeg"), song_t_pie, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("song_type_pie.jpeg"), song_t_pie, path = "../3_Outputs/Plots/EDA")
 
 # Top 10 artists with the highest number of songs
 # Breaking down songs by artist to identify those with the highest contributions
@@ -124,7 +146,7 @@ top_artists = ggplot(df_exploded, aes(x = fct_infreq(name, song_count), y = song
         axis.text.y = element_text(size = 10, face = 'bold'))
 
 plot(top_artists)
-ggsave(paste0("top_artists.jpeg"), top_artists, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("top_artists.jpeg"), top_artists, path = "../3_Outputs/Plots/EDA")
 
 # Average year-end score over the years for songs
 avg_yes_artist = ggplot(df_pop_songs %>% group_by(year) %>% summarize(avg_year_end_score = mean(year_end_score)),
@@ -137,7 +159,7 @@ avg_yes_artist = ggplot(df_pop_songs %>% group_by(year) %>% summarize(avg_year_e
   )
 
 plot(avg_yes_artist)
-ggsave(paste0("avg_year_end_artist_years.jpeg"), avg_yes_artist, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("avg_year_end_artist_years.jpeg"), avg_yes_artist, path = "../3_Outputs/Plots/EDA")
 
 # Average year_end_score over the years for songs based on whether they are explicit or not
 # Joining df_pop_songs with explicit column to include the explicit information
@@ -159,7 +181,7 @@ avg_explicit_plot = ggplot(avg_explicit_yes %>%
   )
 
 plot(avg_explicit_plot)
-ggsave(paste0("avg_year_end_explicit.jpeg"), avg_explicit_plot, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("avg_year_end_explicit.jpeg"), avg_explicit_plot, path = "../3_Outputs/Plots/EDA")
 
 # Average year_end_score over the years for songs based on song type (Solo or Collaboration)
 # Joining df_pop_songs with song_type column to include the song type information
@@ -181,7 +203,7 @@ avg_song_type_plot = ggplot(avg_sol_c_yes %>%
   )
 
 plot(avg_song_type_plot)
-ggsave(paste0("avg_year_end_song_type.jpeg"), avg_song_type_plot, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("avg_year_end_song_type.jpeg"), avg_song_type_plot, path = "../3_Outputs/Plots/EDA")
 
 #### ARTIST --------------------------------------------------------------------
 # Popularity Distribution (distribution of artist popularity scores)
@@ -194,7 +216,7 @@ popularity_dist = ggplot(df_meta_artists, aes(x = popularity)) +
   )
 
 plot(popularity_dist)
-ggsave(paste0("artist_popularity_distribution.jpeg"), popularity_dist, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("artist_popularity_distribution.jpeg"), popularity_dist, path = "../3_Outputs/Plots/EDA")
 
 # Grouping artists by popularity and summarizing
 # Summarizing for counts and mean popularity
@@ -225,7 +247,7 @@ followers_dist = ggplot(df_meta_artists %>%
   )
 
 plot(followers_dist)
-ggsave(paste0("artist_followers_distribution.jpeg"), followers_dist, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("artist_followers_distribution.jpeg"), followers_dist, path = "../3_Outputs/Plots/EDA")
 
 # Total followers of artists over the years
 # Analyzing total followers over time
@@ -251,7 +273,7 @@ followers_over_years = ggplot(agg_followers, aes(x = year, y = sum_fol)) +
   )
 
 plot(followers_over_years)
-ggsave(paste0("total_followers_over_years.jpeg"), followers_over_years, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("total_followers_over_years.jpeg"), followers_over_years, path = "../3_Outputs/Plots/EDA")
 
 # Artist Type Bar Graph (Distribution of artist types
 artist_type_bar = ggplot(df_meta_artists %>%
@@ -268,7 +290,7 @@ artist_type_bar = ggplot(df_meta_artists %>%
   )
 
 plot(artist_type_bar)
-ggsave(paste0("artist_type_distribution.jpeg"), artist_type_bar, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("artist_type_distribution.jpeg"), artist_type_bar, path = "../3_Outputs/Plots/EDA")
 
 # Most Common Top 10 Main Genres of the Artist
 # Analyzing the most common genres excluding 'Not Given'
@@ -296,7 +318,7 @@ top_genres = ggplot(genre_count_df, aes(x = fct_infreq(main_genre, genres_count)
   )
 
 plot(top_genres)
-ggsave(paste0("top_artist_genres.jpeg"), top_genres, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("top_artist_genres.jpeg"), top_genres, path = "../3_Outputs/Plots/EDA")
 
 # Average Year-End Score of Artists by Artist Type
 # Analyzing year-end scores grouped by artist type and year
@@ -333,7 +355,7 @@ year_end_artist_type = ggplot(test_meta, aes(x = year, y = score_sum, fill = art
   )
 
 plot(year_end_artist_type)
-ggsave(paste0("year_end_artist_type.jpeg"), year_end_artist_type, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("year_end_artist_type.jpeg"), year_end_artist_type, path = "../3_Outputs/Plots/EDA")
 
 #### LYRICAL FEATURES ----------------------------------------------------------
 if (lyrical_switch == TRUE) {
@@ -353,7 +375,7 @@ if (lyrical_switch == TRUE) {
     )
   
   plot(sentiment_explicit)
-  ggsave(paste0("sentiment_explicit_distribution.jpeg"), sentiment_explicit, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+  ggsave(paste0("sentiment_explicit_distribution.jpeg"), sentiment_explicit, path = "../3_Outputs/Plots/EDA")
   
   # Distribution of sentiment polarity based on song type (Solo/Collaboration)
   sentiment_song_type = ggplot(df_meta_songs_eda, aes(x = sentiment_polarity, fill = song_type)) +
@@ -367,7 +389,7 @@ if (lyrical_switch == TRUE) {
     )
   
   plot(sentiment_song_type)
-  ggsave(paste0("sentiment_song_type_distribution.jpeg"), sentiment_song_type, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+  ggsave(paste0("sentiment_song_type_distribution.jpeg"), sentiment_song_type, path = "../3_Outputs/Plots/EDA")
   
   # Correlation Heatmap for Lyrical Features and Popularity
   # Computing correlation matrix and visualize as heatmap
@@ -390,7 +412,7 @@ if (lyrical_switch == TRUE) {
           axis.text.y = element_text(size = 10, face = 'bold'))
   
   plot(correlation_heatmap)
-  ggsave(paste0("correlation_heatmap.jpeg"), correlation_heatmap, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+  ggsave(paste0("correlation_heatmap.jpeg"), correlation_heatmap, path = "../3_Outputs/Plots/EDA")
   
   # Scatter plot with linear regression line for repetition ratio and popularity
   repetition_popularity = ggplot(df_meta_songs_eda, aes(x = repetition_ratio, y = popularity)) +
@@ -403,7 +425,7 @@ if (lyrical_switch == TRUE) {
     )
   
   plot(repetition_popularity)
-  ggsave(paste0("repetition_vs_popularity.jpeg"), repetition_popularity, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+  ggsave(paste0("repetition_vs_popularity.jpeg"), repetition_popularity, path = "../3_Outputs/Plots/EDA")
   
   # Change of average lexical diversity over the years (it's decresing)
   lexical_diversity_time = df_meta_songs_eda %>%
@@ -418,7 +440,7 @@ if (lyrical_switch == TRUE) {
     )
   
   plot(lexical_diversity_time)
-  ggsave(paste0("lexical_diversity_over_time.jpeg"), lexical_diversity_time, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+  ggsave(paste0("lexical_diversity_over_time.jpeg"), lexical_diversity_time, path = "../3_Outputs/Plots/EDA")
   
   # Change of average sentiment polarity over the years
   sentiment_over_time = df_meta_songs_eda %>%
@@ -433,7 +455,7 @@ if (lyrical_switch == TRUE) {
     )
   
   plot(sentiment_over_time)
-  ggsave(paste0("sentiment_over_time.jpeg"), sentiment_over_time, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+  ggsave(paste0("sentiment_over_time.jpeg"), sentiment_over_time, path = "../3_Outputs/Plots/EDA")
   
   # Change of average word count over the years
   word_count_over_time = df_meta_songs_eda %>%
@@ -448,7 +470,7 @@ if (lyrical_switch == TRUE) {
     )
   
   plot(word_count_over_time)
-  ggsave(paste0("word_count_over_time.jpeg"), word_count_over_time, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+  ggsave(paste0("word_count_over_time.jpeg"), word_count_over_time, path = "../3_Outputs/Plots/EDA")
   
   # Change of average word length over the years
   word_length_over_time = df_meta_songs_eda %>%
@@ -463,7 +485,7 @@ if (lyrical_switch == TRUE) {
     )
   
   plot(word_length_over_time)
-  ggsave(paste0("word_length_over_time.jpeg"), word_length_over_time, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+  ggsave(paste0("word_length_over_time.jpeg"), word_length_over_time, path = "../3_Outputs/Plots/EDA")
 }
 
 #### ACOUSTIC FEATURES ---------------------------------------------------------
@@ -474,20 +496,26 @@ features = c("acousticness", "danceability", "energy", "valence")
 # Converting the dataset into a long format for easier faceting
 df_acoustic_features_long = df_acoustic_features %>%
   select(all_of(features)) %>%
-  pivot_longer(cols = everything(), names_to = "feature", values_to = "value")
+  pivot_longer(cols = everything(), names_to = "feature", values_to = "value") %>%
+  rename("Acoustic Features" = 'feature')
 
 # Density plot for feature distributions
-feature_distribution = ggplot(df_acoustic_features_long, aes(x = value, fill = feature)) +
+feature_distribution = ggplot(df_acoustic_features_long, aes(x = value, fill = `Acoustic Features`)) +
   geom_density(alpha = 0.6) +
-  facet_wrap(~feature, scales = "free") +
+  facet_wrap(~`Acoustic Features`, scales = "free") +
   labs(
     title = "Distribution of Key Acoustic Features", 
     x = "Feature Value", 
     y = "Density"
+  ) +
+  theme(
+    strip.text = element_text(size = 13, face = "bold"),
+    axis.text.x = element_text(size = 10, face = 'bold'),
+    axis.text.y = element_text(size = 10, face = 'bold')
   )
 
 plot(feature_distribution)
-ggsave(paste0("feature_distribution.jpeg"), feature_distribution, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("feature_distribution.jpeg"), feature_distribution, path = "../3_Outputs/Plots/EDA")
 
 # Tempo vs. Energy Scatter Plot
 # Analyzing the relationship between tempo and energy
@@ -501,7 +529,7 @@ tempo_vs_energy = ggplot(df_acoustic_features, aes(x = tempo, y = energy)) +
   )
 
 plot(tempo_vs_energy)
-ggsave(paste0("tempo_vs_energy.jpeg"), tempo_vs_energy, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("tempo_vs_energy.jpeg"), tempo_vs_energy, path = "../3_Outputs/Plots/EDA")
 
 # Danceability by Time Signature
 # Comparing danceability across different time signatures using a boxplot
@@ -514,7 +542,7 @@ danceability_time_signature = ggplot(df_acoustic_features, aes(x = factor(time_s
   ) +
   theme(legend.position = "none")
 plot(danceability_time_signature)
-ggsave(paste0("danceability_by_time_signature.jpeg"), danceability_time_signature, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("danceability_by_time_signature.jpeg"), danceability_time_signature, path = "../3_Outputs/Plots/EDA")
 
 # Heatmap for Acousticness and Energy by Key and Mode
 # Creating grouped data for heatmap visualization
@@ -538,7 +566,7 @@ heatmap_acousticness = ggplot(heatmap_data, aes(x = factor(key), y = factor(mode
   )
 
 plot(heatmap_acousticness)
-ggsave(paste0("heatmap_acousticness.jpeg"), heatmap_acousticness, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("heatmap_acousticness.jpeg"), heatmap_acousticness, path = "../3_Outputs/Plots/EDA")
 
 # Heatmap for Energy
 heatmap_energy = ggplot(heatmap_data, aes(x = factor(key), y = factor(mode), fill = avg_energy)) +
@@ -554,7 +582,7 @@ heatmap_energy = ggplot(heatmap_data, aes(x = factor(key), y = factor(mode), fil
   theme_minimal()
 
 plot(heatmap_energy)
-ggsave(paste0("heatmap_energy.jpeg"), heatmap_energy, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("heatmap_energy.jpeg"), heatmap_energy, path = "../3_Outputs/Plots/EDA")
 
 # FINAL CORRELATION HEATMAP
 # Calculating the correlation matrix for encoded features and round to two decimals
@@ -585,4 +613,4 @@ correlation_heatmap = ggplot(data = melted_correlation_matrix, aes(x = Var1, y =
   )
 
 plot(correlation_heatmap)
-ggsave(paste0("final_correlation_heatmap.jpeg"), correlation_heatmap, path = paste0(getwd(), "../3_Outputs/Plots/EDA"))
+ggsave(paste0("final_correlation_heatmap.jpeg"), correlation_heatmap, path = "../3_Outputs/Plots/EDA")
