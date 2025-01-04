@@ -1,3 +1,46 @@
+folder_creation_check = function() {
+  # Description : This function check if the required folders for the process are present or not
+  #               If the folder is not present, it create them so the scripts run uninterrupted
+  
+  # Creating the Results Folder to save the plots for results
+  if (!dir.exists("../3_Outputs/Plots/Results")){
+    dir.create("../3_Outputs/Plots/Results/With Lyrics", recursive = TRUE)
+    dir.create("../3_Outputs/Plots/Results/Without Lyrics", recursive = TRUE)
+    
+    print("Results Directory Created!")
+  }else{
+    print("Results Directory Exist!")
+  }
+  
+  # Creating the EDA Folder
+  if (!dir.exists("../3_Outputs/Plots/EDA")){
+    dir.create("../3_Outputs/Plots/EDA", recursive = TRUE)
+    
+    print("EDA Directory Created!")
+  }else{
+    print("EDA Directory Exist!")
+  }
+  
+  # Creating the Trained Model Folder
+  if (!dir.exists("../3_Outputs/Trained_Models")){
+    dir.create("../3_Outputs/Trained_Models/With Lyrics", recursive = TRUE)
+    dir.create("../3_Outputs/Trained_Models/Without Lyrics", recursive = TRUE)
+    
+    print("Trained Model Directory Created!")
+  }else{
+    print("Trained Model Directory Exist!")
+  }
+  
+  # Creating the Trained Model Folder
+  if (!dir.exists("../3_Outputs/RData")){
+    dir.create("../3_Outputs/RData", recursive = TRUE)
+    
+    print("RData Directory Created!")
+  }else{
+    print("RData Directory Exist!")
+  }
+}
+
 extract_artist = function(val) {
   # Matches a literal expression saying extract anything between ' - ': where .* means match any sequence and ? means make it non greedy
   id = str_extract_all(val, "'(.*?)':")[[1]]

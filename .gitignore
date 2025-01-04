@@ -1,7 +1,5 @@
 /Data
 /.DS_Store
-/INF4000 Data Visualization/1_Datasets/
-/INF6027 Introduction to Data Science/1_Datasets/
 /1_Datasets/
 /3_Outputs/Trained_Models/
 *.rds

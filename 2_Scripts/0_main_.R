@@ -1,10 +1,13 @@
-# Setting the Current Path
+# Setting the path to the current directory
 if (interactive()) {
   # If in RStudio, use rstudioapi
   if ("rstudioapi" %in% rownames(installed.packages())) {
     setwd(dirname(rstudioapi::getSourceEditorContext()$path))
   }
 }
+
+# Checking for folder presence
+folder_creation_check()
 
 # VARIABLES TO SET BASED ON WHAT ANALYSIS IS BEING DONE
 # TRUE Means EDA will run (Note: it doesn't effect the prediction and model training so should be run independently to reduce run time)
