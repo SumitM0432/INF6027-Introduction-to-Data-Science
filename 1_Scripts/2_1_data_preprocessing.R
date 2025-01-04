@@ -287,7 +287,7 @@ df_train = df_train %>%
 tables_to_save = c('X_train', 'X_test', 'y_train', 'y_test', 'df_train', 'df_test', 'df_meta_songs_eda')
 
 if (lyrical_switch == TRUE) {
-  save(list = tables_to_save, file = paste0('../3_Outputs/RData/Processed_Music_Data_lyrics.RData')) 
+  save(list = tables_to_save, file = paste0('../2_Outputs/RData/Processed_Music_Data_lyrics.RData')) 
 } else {
-  save(list = tables_to_save, file = paste0('../3_Outputs/RData/Processed_Music_Data.RData'))
+  save(list = tables_to_save, file = paste0('../2_Outputs/RData/Processed_Music_Data.RData'))
 }

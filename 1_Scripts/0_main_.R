@@ -23,9 +23,9 @@ folder_creation_check()
 
 # Changing the path results based on lyrical features usage
 if (lyrical_switch == TRUE) {
-  path_for_results = '../3_Outputs/Plots/Results/With Lyrics'
+  path_for_results = '../2_Outputs/Plots/Results/With Lyrics'
 } else {
-  path_for_results = '../3_Outputs/Plots/Results/Without Lyrics'
+  path_for_results = '../2_Outputs/Plots/Results/Without Lyrics'
 }
 
 print(paste(Sys.time(), ' :: DOWNLOADING THE DATA FROM THE DATABASE'))

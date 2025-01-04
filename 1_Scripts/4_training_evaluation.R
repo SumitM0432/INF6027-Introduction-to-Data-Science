@@ -174,11 +174,11 @@ feature_importance_plot(feature_importance_df = feature_importance_xgb,
 print(paste('--------------------------------', Sys.time(), 'SAVING MODELS', '--------------'))
 # Saving the models in both the scenarios
 if (lyrical_switch == TRUE) {
-  saveRDS(linear_model, "../3_Outputs/Trained_Models/With Lyrics/lm_model.rds")
-  saveRDS(rf_model, "../3_Outputs/Trained_Models/With Lyrics/rf_model.rds")
-  saveRDS(xgb_model, "../3_Outputs/Trained_Models/With Lyrics/xgb_model.rds")
+  saveRDS(linear_model, "../2_Outputs/Trained_Models/With Lyrics/lm_model.rds")
+  saveRDS(rf_model, "../2_Outputs/Trained_Models/With Lyrics/rf_model.rds")
+  saveRDS(xgb_model, "../2_Outputs/Trained_Models/With Lyrics/xgb_model.rds")
 } else {
-  saveRDS(linear_model, "../3_Outputs/Trained_Models/Without Lyrics/lm_model.rds")
-  saveRDS(rf_model, "../3_Outputs/Trained_Models/Without Lyrics/rf_model.rds")
-  saveRDS(xgb_model, "../3_Outputs/Trained_Models/Without Lyrics/xgb_model.rds")
+  saveRDS(linear_model, "../2_Outputs/Trained_Models/Without Lyrics/lm_model.rds")
+  saveRDS(rf_model, "../2_Outputs/Trained_Models/Without Lyrics/rf_model.rds")
+  saveRDS(xgb_model, "../2_Outputs/Trained_Models/Without Lyrics/xgb_model.rds")
 }
