@@ -42,6 +42,8 @@ folder_creation_check = function() {
 }
 
 extract_artist = function(val) {
+  # Description : This function clean and extract the list of artists present in the df_meta_songs as one song can have multiple artists
+  
   # Matches a literal expression saying extract anything between ' - ': where .* means match any sequence and ? means make it non greedy
   id = str_extract_all(val, "'(.*?)':")[[1]]
   # Replace ' and :
@@ -55,6 +57,8 @@ extract_artist = function(val) {
 }
 
 get_artist_features = function (artist_ids_list, df_meta_artists = df_meta_artists) {
+  # Description : This function extract and aggregate the features of artists from df_meta_artist
+  #               Features aggregated are followers, popularity, main genres and number of artists
   
   # Getting the artist ids as a list
   artist_ids_list = unlist(artist_ids_list)
@@ -62,7 +66,7 @@ get_artist_features = function (artist_ids_list, df_meta_artists = df_meta_artis
   artist_info = df_meta_artists %>%
     # Filtering for the artist ids in the questions
     filter(artist_id %in% artist_ids_list) %>%
-    # Summarizing
+    # Summarizing and extracting the required features
     summarise(
       total_followers = sum(followers, na.rm = TRUE),
       avg_popularity = mean(popularity, na.rm = TRUE),
@@ -75,6 +79,8 @@ get_artist_features = function (artist_ids_list, df_meta_artists = df_meta_artis
 }
 
 get_artist_year_end_score = function(artist_ids_list, df_pop_artists = df_pop_artists) {
+  # Description : This function extract the average year end score of artists taking for the latest year
+  
   # Getting the artist ids as a list
   artist_ids_list = unlist(artist_ids_list)
   
@@ -85,22 +91,26 @@ get_artist_year_end_score = function(artist_ids_list, df_pop_artists = df_pop_ar
       avg_artist_year_end_score = mean(year_end_score, na.rm = TRUE)
     )
   
+  # Returning the average year end score for artists
   return (artist_info %>% pull(avg_artist_year_end_score))
 }
 
 evaluation_metrics = function(results_data) {
+  # Description : This function evaluate the model performance using the RMSE and R-Squared metrics
   
   # Root Mean Squared Error (RMSE)
   rmse_val = rmse(results_data, truth = target_values,estimate = predicted_values)
   # R-squared
   rsq_val = rsq(results_data, truth = target_values, estimate = predicted_values)
   
+  # Printing out the values
   print (paste0("Root Mean Squared Error :: ", round(rmse_val$.estimate, 3)))
   print (paste0("R Squared Error :: ", round(rsq_val$.estimate, 3)))
   
 }
 
 pred_vs_actual_plot = function(results_data, model_name) {
+  # description : This function plot the prediction vs Actual song popularity.
   
   # Predicted vs Actual Plot
   pred_v_act = ggplot(results_data, aes(x = target_values, y = predicted_values)) +
@@ -125,6 +135,7 @@ pred_vs_actual_plot = function(results_data, model_name) {
 }
 
 residual_plot = function(results_data, model_name) {
+  # Description : This function plot the residuals for the models
   
   # Calculating Residuals
   results_data = results_data %>%
@@ -153,9 +164,10 @@ residual_plot = function(results_data, model_name) {
 }
 
 feature_importance_plot = function(feature_importance_df, model_name_title, importance_type) {
+  # Description : This function plots the feature importance bar graph
   
   feature_imp_plot = ggplot(feature_importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
-    geom_bar(stat = "identity", fill = ifelse(lyrical_switch == TRUE, 'lightseagreen', 'orange1')) + # Using stat as identity to skip the aggregation since we already have values
+    geom_bar(stat = "identity", fill = ifelse(lyrical_switch == TRUE, 'lightseagreen', 'orange1')) + # Changing colors based on the usage of lyrical features
     coord_flip() +
     labs(
       title = paste0("Feature Importance : ", model_name_title),

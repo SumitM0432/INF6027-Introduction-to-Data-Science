@@ -1,58 +1,48 @@
-# Setting up the connection with the MySQL Server
+# Setting up the connection with the MySQL Server (user and password will change according to the user)
 con = dbConnect(RMySQL::MySQL(),
-                host='localhost',
-                port=3306,
-                user='root',
-                password='qwe123@A@A')
+                host = 'localhost',
+                port = 3306,
+                user = 'root',
+                password = 'qwe123@A@A')
 
-dbSendQuery(con, "SET GLOBAL local_infile = true;")
-
-# Creating and Using the Database
-dbSendQuery(con, "CREATE DATABASE IF NOT EXISTS musicoset;")
+# Using the database where the sql script is run and tables are saved
 dbSendQuery(con, "USE musicoset;")
 
+# Running the queries to ingest the required tables and converting them to data table for further preprocessing
 # Music Metadata
-album_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.albums;")
-df_meta_albums = data.table(fetch(album_results, n = -1))
-
 artists_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.artists;")
-df_meta_artists = data.table(fetch(artists_results, n = -1))
-
-releases_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.releases;")
-df_meta_releases = data.table(fetch(releases_results, n = -1))
+df_meta_artists = data.table(fetch(artists_results, n = -1)) # -1 flag used to ingest all the rows
 
 songs_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.songs;")
-df_meta_songs = data.table(fetch(songs_results, n = -1))
-
-tracks_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.tracks;")
-df_meta_tracks = data.table(fetch(tracks_results, n = -1))
+df_meta_songs = data.table(fetch(songs_results, n = -1)) # -1 flag used to ingest all the rows
 
 # Music Popularity Pop
-album_pop_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.album_pop;")
-df_pop_albums = data.table(fetch(album_pop_results, n = -1))
-
 artists_pop_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.artist_pop;")
-df_pop_artists = data.table(fetch(artists_pop_results, n = -1))
+df_pop_artists = data.table(fetch(artists_pop_results, n = -1)) # -1 flag used to ingest all the rows
 
 song_pop_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.song_pop;")
-df_pop_songs = data.table(fetch(song_pop_results, n = -1))
+df_pop_songs = data.table(fetch(song_pop_results, n = -1)) # -1 flag used to ingest all the rows
 
 # Music Chart
-album_chart_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.album_chart;")
-df_chart_albums = data.table(fetch(album_chart_results, n = -1))
-
 artists_chart_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.artist_chart;")
-df_chart_artists = data.table(fetch(artists_chart_results, n = -1))
+df_chart_artists = data.table(fetch(artists_chart_results, n = -1)) # -1 flag used to ingest all the rows
 
 song_chart_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.song_chart;")
-df_chart_songs = data.table(fetch(song_chart_results, n = -1))
+df_chart_songs = data.table(fetch(song_chart_results, n = -1)) # -1 flag used to ingest all the rows
 
 # Music Song Features
-af_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.acoustic_features;")
-df_acoustic_features = data.table(fetch(af_results, n = -1))
+df_ac_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.acoustic_features;")
+df_acoustic_features = data.table(fetch(df_ac_results, n = -1)) # -1 flag used to ingest all the rows
 
 lyrics_results = dbSendQuery(con, "SELECT DISTINCT * FROM musicoset.lyrics;")
-df_lyrics = data.table(fetch(lyrics_results, n = -1))
+df_lyrics = data.table(fetch(lyrics_results, n = -1)) # -1 flag used to ingest all the rows
+
+# Deleting the unused variables to save memory
+rm(con, artists_results, songs_results, artists_pop_results, song_pop_results,
+   artists_chart_results, song_chart_results, df_ac_results, lyrics_results)
+
+# Garbage collection
+gc()
 
 # Saving RData for decrease the data loading time
 tables_to_save <- grep("df", ls(), value = TRUE)

@@ -1,11 +1,11 @@
-# Data Ingestion
+# Libraries for Data Ingestion
 if (!requireNamespace("RMySQL")) install.packages("RMySQL")
 library("RMySQL")
 
 if (!requireNamespace("DBI")) install.packages("DBI")
 library("DBI")
 
-# Preprocessing and Plotting
+# Libraries for Preprocessing and Plotting
 if (!requireNamespace("data.table")) install.packages("data.table")
 library("data.table")
 
@@ -21,7 +21,7 @@ library("stopwords")
 if (!requireNamespace("syuzhet")) install.packages("syuzhet")
 library("syuzhet")
 
-# For Model Training, Prediction and Evaluation
+# Libraries for Model Training, Prediction and Evaluation
 if (!requireNamespace("tidymodels")) install.packages("tidymodels")
 library("tidymodels")
 

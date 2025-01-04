@@ -2,7 +2,7 @@
 
 # Linear Regression Model Definition (Baseline)
 linear_reg = function (formula, data) {
-  linear_model = lm(formula, data = df_train)
+  linear_model = lm(formula, data = data)
   return (linear_model)
 }
 
