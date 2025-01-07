@@ -46,4 +46,4 @@ gc()
 
 # Saving RData for decrease the data loading time
 tables_to_save <- grep("df", ls(), value = TRUE)
-save(list = tables_to_save, file = paste0('../3_Outputs/RData/Loaded_Music_Data.RData'))
+save(list = tables_to_save, file = paste0('../2_Outputs/RData/Loaded_Music_Data.RData'))

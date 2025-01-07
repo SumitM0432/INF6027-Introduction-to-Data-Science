@@ -22,7 +22,7 @@ sentiment_explicit = ggplot(df_meta_songs_eda, aes(x = sentiment_polarity, fill 
   )
 
 plot(sentiment_explicit)
-ggsave(paste0("sentiment_explicit_distribution.jpeg"), sentiment_explicit, path = "../3_Outputs/Plots/EDA")
+ggsave(paste0("sentiment_explicit_distribution.jpeg"), sentiment_explicit, path = "../2_Outputs/Plots/EDA")
 
 # Distribution of sentiment polarity based on song type (Solo/Collaboration)
 sentiment_song_type = ggplot(df_meta_songs_eda, aes(x = sentiment_polarity, fill = song_type)) +
@@ -36,7 +36,7 @@ sentiment_song_type = ggplot(df_meta_songs_eda, aes(x = sentiment_polarity, fill
   )
 
 plot(sentiment_song_type)
-ggsave(paste0("sentiment_song_type_distribution.jpeg"), sentiment_song_type, path = "../3_Outputs/Plots/EDA")
+ggsave(paste0("sentiment_song_type_distribution.jpeg"), sentiment_song_type, path = "../2_Outputs/Plots/EDA")
 
 # FINAL CORRELATION HEATMAP
 # Calculating the correlation matrix for encoded features and round to two decimals for all the features
@@ -67,7 +67,7 @@ correlation_heatmap = ggplot(data = melted_correlation_matrix, aes(x = Var1, y =
   )
 
 plot(correlation_heatmap)
-ggsave(paste0("final_correlation_heatmap_with_lyrics.jpeg"), correlation_heatmap, path = "../3_Outputs/Plots/EDA")
+ggsave(paste0("final_correlation_heatmap_with_lyrics.jpeg"), correlation_heatmap, path = "../2_Outputs/Plots/EDA")
 
 # Scatter plot with linear regression line for repetition ratio and popularity
 repetition_popularity = ggplot(df_meta_songs_eda, aes(x = repetition_ratio, y = popularity)) +
@@ -80,7 +80,7 @@ repetition_popularity = ggplot(df_meta_songs_eda, aes(x = repetition_ratio, y = 
   )
 
 plot(repetition_popularity)
-ggsave(paste0("repetition_vs_popularity.jpeg"), repetition_popularity, path = "../3_Outputs/Plots/EDA")
+ggsave(paste0("repetition_vs_popularity.jpeg"), repetition_popularity, path = "../2_Outputs/Plots/EDA")
 
 # Change of average lexical diversity over the years (it's decresing)
 lexical_diversity_time = df_meta_songs_eda %>%
@@ -95,7 +95,7 @@ lexical_diversity_time = df_meta_songs_eda %>%
   )
 
 plot(lexical_diversity_time)
-ggsave(paste0("lexical_diversity_over_time.jpeg"), lexical_diversity_time, path = "../3_Outputs/Plots/EDA")
+ggsave(paste0("lexical_diversity_over_time.jpeg"), lexical_diversity_time, path = "../2_Outputs/Plots/EDA")
 
 # Change of average sentiment polarity over the years
 sentiment_over_time = df_meta_songs_eda %>%
@@ -110,7 +110,7 @@ sentiment_over_time = df_meta_songs_eda %>%
   )
 
 plot(sentiment_over_time)
-ggsave(paste0("sentiment_over_time.jpeg"), sentiment_over_time, path = "../3_Outputs/Plots/EDA")
+ggsave(paste0("sentiment_over_time.jpeg"), sentiment_over_time, path = "../2_Outputs/Plots/EDA")
 
 # Change of average word count over the years
 word_count_over_time = df_meta_songs_eda %>%
@@ -125,7 +125,7 @@ word_count_over_time = df_meta_songs_eda %>%
   )
 
 plot(word_count_over_time)
-ggsave(paste0("word_count_over_time.jpeg"), word_count_over_time, path = "../3_Outputs/Plots/EDA")
+ggsave(paste0("word_count_over_time.jpeg"), word_count_over_time, path = "../2_Outputs/Plots/EDA")
 
 # Change of average word length over the years
 word_length_over_time = df_meta_songs_eda %>%
@@ -140,4 +140,4 @@ word_length_over_time = df_meta_songs_eda %>%
   )
 
 plot(word_length_over_time)
-ggsave(paste0("word_length_over_time.jpeg"), word_length_over_time, path = "../3_Outputs/Plots/EDA")
+ggsave(paste0("word_length_over_time.jpeg"), word_length_over_time, path = "../2_Outputs/Plots/EDA")
