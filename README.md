@@ -70,9 +70,8 @@ Trained_Models Folder: Saves the Trained Models for later usage
 ### 2. Setting up the Configuration
 ##### Note: The configuration variable needs to be set in 1_Scripts/0_main_.R file
 1. Change the username and password for the MySQL server to ingest the data.
-2. The variable lyrical_switch can be changed based on the part of the report, TRUE uses lyrical features to train the models and FALSE neglects the lyrical features. </br>
-*(DEFAULT = TRUE)*
+2. The variable lyrical_switch can be changed based on the part of the report, TRUE uses lyrical features to train the models and FALSE neglects the lyrical features. *(DEFAULT = TRUE)*
 
 ### 3. Running the Code (Scripts)
-1. Run the 0_main_.R Script. </br>
+1. Run the ```0_main_.R``` Script.
 *NOTE: This script runs all the required scripts and produces the results*
