@@ -124,8 +124,10 @@ pred_vs_actual_plot = function(results_data, model_name) {
     theme_minimal() +
     theme(text = element_text(family = 'mono'),
           plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
-          axis.text.x = element_text(size = 10, face = 'bold'),
-          axis.text.y = element_text(size = 10, face = 'bold'))
+          axis.text.x = element_text(size = 15, face = 'bold'),
+          axis.text.y = element_text(size = 15, face = 'bold'),
+          axis.title.x = element_text(size = 13, face = 'bold'),
+          axis.title.y = element_text(size = 13, face = 'bold'))
   
   # Plotting
   plot(pred_v_act)
@@ -153,8 +155,10 @@ residual_plot = function(results_data, model_name) {
     theme_minimal() +
     theme(text = element_text(family = 'mono'),
           plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
-          axis.text.x = element_text(size = 10, face = 'bold'),
-          axis.text.y = element_text(size = 10, face = 'bold'))
+          axis.text.x = element_text(size = 15, face = 'bold'),
+          axis.text.y = element_text(size = 15, face = 'bold'),
+          axis.title.x = element_text(size = 13, face = 'bold'),
+          axis.title.y = element_text(size = 13, face = 'bold'))
   
   # Plotting
   plot(res_plot)
@@ -177,8 +181,10 @@ feature_importance_plot = function(feature_importance_df, model_name_title, impo
     theme_minimal() +
     theme(text = element_text(family = 'mono'),
           plot.title = element_text(hjust = 0.5, , size = 15, face = 'bold'),
-          axis.text.x = element_text(size = 10, face = 'bold'),
-          axis.text.y = element_text(size = 10, face = 'bold'))
+          axis.text.x = element_text(size = 13, face = 'bold'),
+          axis.text.y = element_text(size = 13, face = 'bold'),
+          axis.title.x = element_text(size = 13, face = 'bold'),
+          axis.title.y = element_text(size = 13, face = 'bold'))
   
   # Plotting
   plot(feature_imp_plot)

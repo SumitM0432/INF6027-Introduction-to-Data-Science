@@ -3,8 +3,10 @@ theme_set(
   theme_minimal() +
     theme(text = element_text(family = 'mono'),
           plot.title = element_text(hjust = 0.5, size = 15, face = 'bold'),
-          axis.text.x = element_text(size = 10, face = 'bold'),
-          axis.text.y = element_text(size = 10, face = 'bold'),
+          axis.title.x = element_text(size = 13, face = 'bold'),
+          axis.title.y = element_text(size = 13, face = 'bold'),
+          axis.text.x = element_text(size = 15, face = 'bold'),
+          axis.text.y = element_text(size = 15, face = 'bold'),
           legend.title = element_text(size = 12, face = "bold"),
           legend.text = element_text(size = 10))
 )
@@ -62,8 +64,12 @@ correlation_heatmap = ggplot(data = melted_correlation_matrix, aes(x = Var1, y =
   theme(
     text = element_text(family = 'mono'),
     plot.title = element_text(hjust = 0.5, size = 15, face = 'bold'),
+    axis.title.x = element_text(size = 13, face = 'bold'),
+    axis.title.y = element_text(size = 13, face = 'bold'),
     axis.text.x = element_text(angle = 50, size = 10, face = 'bold', vjust = 1, hjust = 1),
-    axis.text.y = element_text(size = 10, face = 'bold')
+    axis.text.y = element_text(size = 10, face = 'bold'),
+    legend.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 10)
   )
 
 plot(correlation_heatmap)
