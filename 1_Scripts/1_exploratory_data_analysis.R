@@ -3,8 +3,10 @@ theme_set(
   theme_minimal() +
     theme(text = element_text(family = 'mono'),
           plot.title = element_text(hjust = 0.5, size = 15, face = 'bold'),
-          axis.text.x = element_text(size = 10, face = 'bold'),
-          axis.text.y = element_text(size = 10, face = 'bold'),
+          axis.title.x = element_text(size = 13, face = 'bold'),
+          axis.title.y = element_text(size = 13, face = 'bold'),
+          axis.text.x = element_text(size = 15, face = 'bold'),
+          axis.text.y = element_text(size = 15, face = 'bold'),
           legend.title = element_text(size = 12, face = "bold"),
           legend.text = element_text(size = 10))
 )
@@ -23,7 +25,8 @@ pop_dist = ggplot(df_meta_songs_2, aes(x = popularity)) +
     x = "Popularity",
     y = "Count"
   ) +
-  scale_x_continuous(breaks = seq(min(df_meta_songs_2$popularity), max(df_meta_songs_2$popularity), by = 15))
+  scale_x_continuous(breaks = seq(min(df_meta_songs_2$popularity), max(df_meta_songs_2$popularity), by = 15)) +
+  scale_y_continuous(breaks = pretty_breaks(n = 8))
 
 plot(pop_dist)
 ggsave(paste0("popularity_distribution.jpeg"), pop_dist, path = "../2_Outputs/Plots/EDA")
@@ -161,7 +164,9 @@ avg_yes_artist = ggplot(df_pop_songs %>% group_by(year) %>% summarize(avg_year_e
     title = "Average Year-End Score Over Years",
     x = "Year",
     y = "Average Year-End Score"
-  )
+  ) +
+  scale_x_continuous(breaks = pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = pretty_breaks(n = 10))
 
 plot(avg_yes_artist)
 ggsave(paste0("avg_year_end_artist_years.jpeg"), avg_yes_artist, path = "../2_Outputs/Plots/EDA")
@@ -183,7 +188,9 @@ avg_explicit_plot = ggplot(avg_explicit_yes %>%
     x = "Year",
     y = "Average Year-End Score",
     fill = "Explicit"
-  )
+  ) +
+  scale_x_continuous(breaks = pretty_breaks(n = 8)) +
+  scale_y_continuous(breaks = pretty_breaks(n = 8))
 
 plot(avg_explicit_plot)
 ggsave(paste0("avg_year_end_explicit.jpeg"), avg_explicit_plot, path = "../2_Outputs/Plots/EDA")
@@ -205,7 +212,9 @@ avg_song_type_plot = ggplot(avg_sol_c_yes %>%
     x = "Year",
     y = "Average Year-End Score",
     fill = "Song Type"
-  )
+  ) +
+  scale_x_continuous(breaks = pretty_breaks(n = 8)) +
+  scale_y_continuous(breaks = pretty_breaks(n = 8))
 
 plot(avg_song_type_plot)
 ggsave(paste0("avg_year_end_song_type.jpeg"), avg_song_type_plot, path = "../2_Outputs/Plots/EDA")
@@ -218,7 +227,9 @@ popularity_dist = ggplot(df_meta_artists, aes(x = popularity)) +
     title = "Distribution of Artist Popularity Scores",
     x = "Popularity",
     y = "Count"
-  )
+  ) +
+  scale_x_continuous(breaks = seq(min(df_meta_artists$popularity), max(df_meta_artists$popularity), by = 15)) +
+  scale_y_continuous(breaks = pretty_breaks(n = 8))
 
 plot(popularity_dist)
 ggsave(paste0("artist_popularity_distribution.jpeg"), popularity_dist, path = "../2_Outputs/Plots/EDA")
@@ -357,7 +368,15 @@ year_end_artist_type = ggplot(pop_meta, aes(x = year, y = score_sum, fill = arti
     x = "Year",
     y = "Year-End Score (in Thousands)",
     fill = "Artist Type"
-  )
+  ) +
+  theme(text = element_text(family = 'mono'),
+        plot.title = element_text(hjust = 0.5, size = 15, face = 'bold'),
+        axis.title.x = element_text(size = 13, face = 'bold'),
+        axis.title.y = element_text(size = 13, face = 'bold'),
+        axis.text.x = element_text(size = 8, face = 'bold'),
+        axis.text.y = element_text(size = 15, face = 'bold'),
+        legend.title = element_text(size = 12, face = "bold"),
+        legend.text = element_text(size = 10))
 
 plot(year_end_artist_type)
 ggsave(paste0("year_end_artist_type.jpeg"), year_end_artist_type, path = "../2_Outputs/Plots/EDA")
