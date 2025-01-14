@@ -3,7 +3,61 @@
 This repository contains the codebase for the INF6027 Introduction to Data Science Module report. It includes data preprocessing, feature engineering, model training, and evaluation scripts. The repository also generates the results, plots, and visualizations used in the report and provides the workflow for the analysis.
 
 ### File Structure
+```
+├── 0_Config
+│    ├── 0_functions.R
+│    ├── 0_libraries.R
+│    └── 0_musicoset_data_loading.R
+├── 1_Scripts
+│    ├── 0_main_.R
+│    ├── 1_exploratory_data_analysis.R
+│    ├── 2_1_data_preprocessing.R
+│    ├── 2_2_exploratory_data_analysis_lyrical.R
+│    ├── 3_model_definition.R
+│    └── 4_training_evaluation.R
+├── 2_Outputs
+│    ├── Plots
+│    │    ├── EDA
+│    │    └── Results
+│    │        ├── With Lyrics
+│    │        └── Without Lyrics
+│    ├── RData
+│    └── Trained_Models
+│        ├── With Lyrics
+└──      └── Without Lyrics
+```
+##### Configuration Scripts (0_Config/):
+```
+0_functions.R - Script consisting of all the functions used in the main scripts
 
+0_libraries.R - Script to install the Required libraries
+
+0_musicoset_data_loading.R - Loading the data from the SQL server
+```
+
+##### Main Scripts (1_Scripts/):
+```
+0_main_.R - Main Script to run all the required scripts in order
+
+1_exploratory_data_analysis.R - Script for Exploratory Data Analysis
+
+2_1_data_preprocessing.R - Script to do the data preprocessing and feature engineering
+
+2_2_exploratory_data_analysis_lyrical.R - Script for Exploratory Data Analysis for lyrical features
+
+3_model_definition.R - Script to define the Machine Learning Model
+
+4_training_evaluation.R - Script For training the model and evaluation
+```
+
+##### Output Folders (2_Outputs/):
+```
+Plots Folder: Plots saved from EDA and training and evaluation of the model
+
+RData Folder: Save the RData generated from running the script
+
+Trained_Models Folder: Saves the Trained Models for later usage
+```
 
 ### Ingesting the dataset
 1. On the terminal install MySQL.
