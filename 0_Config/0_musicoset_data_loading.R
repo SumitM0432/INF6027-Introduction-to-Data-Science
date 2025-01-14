@@ -2,8 +2,8 @@
 con = dbConnect(RMySQL::MySQL(),
                 host = 'localhost',
                 port = 3306,
-                user = 'root',
-                password = 'qwe123@A@A')
+                user = username_sql,
+                password = password_sql)
 
 # Using the database where the sql script is run and tables are saved
 dbSendQuery(con, "USE musicoset;")

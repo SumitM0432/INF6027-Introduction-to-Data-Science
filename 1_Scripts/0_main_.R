@@ -6,12 +6,16 @@ if (interactive()) {
   }
 }
 
+# Username and Password for SQL Server
+username_sql = 'root'
+password_sql = 'qwe123@A@A'
+
 # Setting seed for reproducibility
 set.seed(123)
 
 # TRUE - RUN with Lyrical Features and FALSE - RUN without Lyrical Features
 # Generate two sets of results based on the research questions in the report.
-lyrical_switch = FALSE
+lyrical_switch = TRUE
 
 print(paste(Sys.time(), ' :: INGESTING LIBRARIES AND FUNCTIONS'))
 # Getting the libraries and the required functions
