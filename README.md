@@ -54,7 +54,7 @@ This repository contains the codebase for the INF6027 Introduction to Data Scien
 ```
 Plots Folder: Plots saved from EDA and training and evaluation of the model
 
-RData Folder: Save the RData generated from running the script
+RData Folder: Saves the RData generated from running the scripts
 
 Trained_Models Folder: Saves the Trained Models for later usage
 ```
