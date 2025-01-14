@@ -8,7 +8,7 @@ if (interactive()) {
 
 # Username and Password for SQL Server
 username_sql = 'root'
-password_sql = 'qwe123@A@A'
+password_sql = '' # Change the empty string to the password for your MySQL server
 
 # Setting seed for reproducibility
 set.seed(123)
